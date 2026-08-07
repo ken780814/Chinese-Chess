@@ -41,17 +41,12 @@ class AI:
     
     def _easy_move(self, board, color):
         """初级 AI - 随机走法"""
-        all_moves = []
-        for row in range(10):
-            for col in range(9):
-                piece = board.get_piece(row, col)
-                if piece and piece['color'] == color:
-                    moves = Rules.get_valid_moves(board, row, col)
-                    for to_row, to_col in moves:
-                        all_moves.append((row, col, to_row, to_col))
+        all_moves = Rules.get_all_moves(board, color, check_check=False)
         
         if all_moves:
-            return random.choice(all_moves)
+            # 随机选择一个走法
+            move = random.choice(all_moves)
+            return move  # (from_row, from_col, to_row, to_col)
         return None
     
     def _minimax_move(self, board, color, depth):
@@ -62,14 +57,13 @@ class AI:
         alpha = float('-inf')
         beta = float('inf')
         
-        all_moves = self._get_all_moves(board, color)
+        all_moves = Rules.get_all_moves(board, color, check_check=True)
         
         for move in all_moves:
             from_row, from_col, to_row, to_col = move
             
             # 模拟走法
-            temp_board = Board()
-            temp_board.board = [row[:] for row in board.board]
+            temp_board = board.copy()
             temp_board.move_piece(from_row, from_col, to_row, to_col)
             
             # 调用 minimax
@@ -94,12 +88,11 @@ class AI:
         
         if is_maximizing:
             max_score = float('-inf')
-            moves = self._get_all_moves(board, player_color)
+            moves = Rules.get_all_moves(board, player_color, check_check=True)
             
             for move in moves:
                 from_row, from_col, to_row, to_col = move
-                temp_board = Board()
-                temp_board.board = [row[:] for row in board.board]
+                temp_board = board.copy()
                 temp_board.move_piece(from_row, from_col, to_row, to_col)
                 
                 score = self._minimax(temp_board, depth - 1, alpha, beta, False, player_color)
@@ -111,12 +104,11 @@ class AI:
             return max_score
         else:
             min_score = float('inf')
-            moves = self._get_all_moves(board, enemy_color)
+            moves = Rules.get_all_moves(board, enemy_color, check_check=True)
             
             for move in moves:
                 from_row, from_col, to_row, to_col = move
-                temp_board = Board()
-                temp_board.board = [row[:] for row in board.board]
+                temp_board = board.copy()
                 temp_board.move_piece(from_row, from_col, to_row, to_col)
                 
                 score = self._minimax(temp_board, depth - 1, alpha, beta, True, player_color)
@@ -127,20 +119,16 @@ class AI:
             
             return min_score
     
-    def _get_all_moves(self, board, color):
-        """获取指定颜色的所有合法走法"""
-        all_moves = []
-        for row in range(10):
-            for col in range(9):
-                piece = board.get_piece(row, col)
-                if piece and piece['color'] == color:
-                    moves = Rules.get_valid_moves(board, row, col)
-                    for to_row, to_col in moves:
-                        all_moves.append((row, col, to_row, to_col))
-        return all_moves
-    
     def _evaluate_board(self, board, player_color):
         """评估棋盘分数"""
+        # 检查游戏是否结束
+        result, reason = Rules.is_game_over(board)
+        if result:
+            if result == player_color:
+                return 100000  # 己方获胜
+            else:
+                return -100000  # 对方获胜
+        
         # 棋子价值
         piece_values = {
             'K': 10000,
@@ -185,6 +173,11 @@ class AI:
             elif color == 'black' and row > 6:
                 bonus += 30
         
+        # 控制中心的加成
+        if piece_type in ['N', 'C', 'R']:
+            center_dist = abs(col - 4) + abs(row - 4)
+            bonus += max(0, 10 - center_dist)
+        
         return bonus
 
 
@@ -202,3 +195,7 @@ if __name__ == '__main__':
     ai = AI(difficulty='medium')
     move = ai.get_best_move(board, 'red')
     print(f"Medium AI 推荐走法: {move}")
+    
+    ai = AI(difficulty='hard')
+    move = ai.get_best_move(board, 'red')
+    print(f"Hard AI 推荐走法: {move}")

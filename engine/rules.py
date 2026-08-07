@@ -97,49 +97,67 @@ class Board:
                 if piece and piece['color'] == color and piece['type'] == 'K':
                     return (row, col)
         return None
+    
+    def copy(self):
+        """复制棋盘"""
+        new_board = Board()
+        new_board.board = [row[:] for row in self.board]
+        return new_board
 
 
 class Rules:
     """规则类 - 判断合法走法"""
     
     @staticmethod
-    def get_valid_moves(board, row, col):
-        """获取指定位置棋子的所有合法走法"""
-        piece = board.get_piece(row, col)
-        if piece is None:
-            return []
+    def get_all_moves(board, color, check_check=True):
+        """
+        获取指定颜色的所有合法走法
+        check_check: 是否检查是否会导致自己被将军（默认True）
+        """
+        all_moves = []
         
+        for row in range(BOARD_ROWS):
+            for col in range(BOARD_COLS):
+                piece = board.get_piece(row, col)
+                if piece and piece['color'] == color:
+                    moves = Rules._get_piece_moves(board, row, col, piece)
+                    
+                    if check_check:
+                        # 过滤掉会导致自己被将军的走法
+                        for to_row, to_col in moves:
+                            temp_board = board.copy()
+                            temp_board.move_piece(row, col, to_row, to_col)
+                            if not Rules._is_king_in_check(temp_board, color, raw=True):
+                                all_moves.append((row, col, to_row, to_col))
+                    else:
+                        # 不检查将军，返回所有走法
+                        for to_row, to_col in moves:
+                            all_moves.append((row, col, to_row, to_col))
+        
+        return all_moves
+    
+    @staticmethod
+    def _get_piece_moves(board, row, col, piece):
+        """获取单个棋子的所有可能走法（不检查是否导致被将军）"""
         piece_type = piece['type']
         color = piece['color']
-        moves = []
         
-        # 根据棋子类型计算合法走法
         if piece_type == 'K':  # 将/帅
-            moves = Rules._get_king_moves(board, row, col, color)
+            return Rules._get_king_moves(board, row, col, color)
         elif piece_type == 'A':  # 士/仕
-            moves = Rules._get_advisor_moves(board, row, col, color)
+            return Rules._get_advisor_moves(board, row, col, color)
         elif piece_type == 'B':  # 象/相
-            moves = Rules._get_bishop_moves(board, row, col, color)
+            return Rules._get_bishop_moves(board, row, col, color)
         elif piece_type == 'N':  # 马
-            moves = Rules._get_knight_moves(board, row, col)
+            return Rules._get_knight_moves(board, row, col)
         elif piece_type == 'R':  # 车
-            moves = Rules._get_rook_moves(board, row, col, color)
+            return Rules._get_rook_moves(board, row, col, color)
         elif piece_type == 'C':  # 炮
-            moves = Rules._get_cannon_moves(board, row, col, color)
+            return Rules._get_cannon_moves(board, row, col, color)
         elif piece_type == 'P':  # 兵/卒
-            moves = Rules._get_pawn_moves(board, row, col, color)
+            return Rules._get_pawn_moves(board, row, col, color)
         
-        # 过滤掉会导致自己被困的走法
-        valid_moves = []
-        for to_row, to_col in moves:
-            # 模拟移动，检查是否会导致己方将帅被将军
-            temp_board = Board()
-            temp_board.board = [row[:] for row in board.board]
-            captured = temp_board.move_piece(row, col, to_row, to_col)
-            if not Rules._is_king_in_check(temp_board, color):
-                valid_moves.append((to_row, to_col))
-        
-        return valid_moves
+        return []
     
     @staticmethod
     def _get_king_moves(board, row, col, color):
@@ -164,7 +182,6 @@ class Rules:
                     moves.append((new_row, new_col))
         
         # 将帅对脸规则（飞将）
-        # 如果对面有对方的将/帅，且中间没有棋子，可以吃掉
         enemy_king_color = 'black' if color == 'red' else 'red'
         enemy_king_pos = board.find_king(enemy_king_color)
         if enemy_king_pos:
@@ -260,9 +277,9 @@ class Rules:
                 if board.get_piece(leg_row, leg_col) is None:
                     target = board.get_piece(new_row, new_col)
                     if target is None or target['color'] != 'red':
-                        pass  # 简化处理
+                        pass
                     if target is None or target['color'] != 'black':
-                        pass  # 简化处理
+                        pass
                     moves.append((new_row, new_col))
         
         return moves
@@ -347,8 +364,11 @@ class Rules:
         return moves
     
     @staticmethod
-    def _is_king_in_check(board, color):
-        """检查指定颜色的将/帅是否被将军"""
+    def _is_king_in_check(board, color, raw=False):
+        """
+        检查指定颜色的将/帅是否被将军
+        raw: 是否使用原始检查（不递归调用 get_valid_moves）
+        """
         king_pos = board.find_king(color)
         if king_pos is None:
             return True  # 将/帅被吃掉，也算被将军
@@ -360,7 +380,8 @@ class Rules:
             for col in range(BOARD_COLS):
                 piece = board.get_piece(row, col)
                 if piece and piece['color'] == enemy_color:
-                    moves = Rules.get_valid_moves(board, row, col)
+                    # 使用 _get_piece_moves 而不是 get_valid_moves，避免递归
+                    moves = Rules._get_piece_moves(board, row, col, piece)
                     if king_pos in moves:
                         return True
         
@@ -373,15 +394,8 @@ class Rules:
             return False
         
         # 检查是否有合法走法可以解除将军
-        for row in range(BOARD_ROWS):
-            for col in range(BOARD_COLS):
-                piece = board.get_piece(row, col)
-                if piece and piece['color'] == color:
-                    moves = Rules.get_valid_moves(board, row, col)
-                    if moves:
-                        return False
-        
-        return True
+        all_moves = Rules.get_all_moves(board, color, check_check=True)
+        return len(all_moves) == 0
     
     @staticmethod
     def is_game_over(board):
@@ -419,11 +433,16 @@ if __name__ == '__main__':
         print(line)
     
     print("\n测试红方棋子走法：")
-    moves = Rules.get_valid_moves(board, 9, 0)
-    print(f"车(9,0)的合法走法: {moves}")
+    moves = Rules.get_all_moves(board, 'red', check_check=False)
+    print(f"红方所有可能走法数量: {len(moves)}")
     
-    moves = Rules.get_valid_moves(board, 9, 1)
-    print(f"马(9,1)的合法走法: {moves}")
+    moves = Rules.get_all_moves(board, 'red', check_check=True)
+    print(f"红方合法走法数量: {len(moves)}")
     
-    moves = Rules.get_valid_moves(board, 6, 0)
-    print(f"兵(6,0)的合法走法: {moves}")
+    # 测试将军检测
+    print(f"\n红方是否被将军: {Rules._is_king_in_check(board, 'red')}")
+    print(f"黑方是否被将军: {Rules._is_king_in_check(board, 'black')}")
+    
+    # 测试将死
+    print(f"\n红方是否被将死: {Rules.is_checkmate(board, 'red')}")
+    print(f"黑方是否被将死: {Rules.is_checkmate(board, 'black')}")
