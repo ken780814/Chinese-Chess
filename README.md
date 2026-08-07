@@ -7,6 +7,7 @@
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Linux](https://img.shields.io/badge/Linux-x86_64-orange.svg)
 ![Windows](https://img.shields.io/badge/Windows-10%2F11-blue.svg)
+![macOS](https://img.shields.io/badge/macOS-10.13%2B-purple.svg)
 
 **一款功能丰富的中国象棋桌面游戏，支持四级 AI 难度和残局挑战**
 
@@ -44,33 +45,17 @@
 |------|------|
 | **Linux** | Linux (x86_64), OpenGL/X11, 256MB 内存 |
 | **Windows** | Windows 10/11 (64位), DirectX 9.0c, 256MB 内存 |
+| **macOS** | macOS 10.13+ (High Sierra), 256MB 内存 |
 
-### 下载安装
+### 下载 Release
 
-#### Linux 版本
+[![GitHub Release](https://img.shields.io/github/downloads/ken780814/Chinese-Chess/total?style=for-the-badge)](https://github.com/ken780814/Chinese-Chess/releases)
 
-```bash
-# 下载
-wget https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz
-tar -xzf Chinese-Chess-v1.0-linux-x64.tar.gz
-cd Chinese-Chess-v1.0
-
-# 运行
-./chinese-chess
-```
-
-#### Windows 版本
-
-1. 下载 [Chinese-Chess-v1.0-windows-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz)
-2. 解压到任意目录
-3. 双击 `chinese-chess.exe` 运行
-
-```cmd
-# 命令行运行
-chinese-chess.exe              # 开始游戏
-chinese-chess.exe --mode=endgame  # 残局挑战
-chinese-chess.exe --no-sound   # 禁用音效
-```
+| 平台 | 下载链接 |
+|------|----------|
+| 🐧 **Linux x64** | [Chinese-Chess-v1.0-linux-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz) |
+| 🪟 **Windows x64** | [Chinese-Chess-v1.0-windows-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz) |
+| 🍎 **macOS x64** | [Chinese-Chess-v1.0-macos-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-macos-x64.tar.gz) |
 
 ### 从源码运行
 
@@ -128,12 +113,39 @@ python3 main.py
 | 11 | 三子归边 | ⭐⭐⭐ | 车马炮配合杀局 | 3步 |
 | 12 | 钓鱼马 | ⭐⭐ | 马兵胜单士 | 5步 |
 
-#### 残局功能
+---
 
-- **提示**: 显示下一步推荐走法
-- **重置**: 回到残局初始状态
-- **下一关**: 挑战下一个残局
-- **步数统计**: 记录解题步数
+## 📦 各平台运行方式
+
+### Linux
+
+```bash
+# 解压
+tar -xzf Chinese-Chess-v1.0-linux-x64.tar.gz
+cd Chinese-Chess-v1.0
+
+# 运行
+./chinese-chess
+./chinese-chess --mode=endgame
+./chinese-chess --no-sound
+```
+
+### Windows
+
+```cmd
+# 解压后运行
+chinese-chess.exe
+chinese-chess.exe --mode=endgame
+chinese-chess.exe --no-sound
+```
+
+### macOS
+
+```bash
+# 解压后运行
+open 中国象棋.app
+open -a 中国象棋 --args --mode=endgame
+```
 
 ---
 
@@ -163,10 +175,13 @@ Chinese-Chess/
 │   ├── install.sh           # Linux 安装脚本
 │   ├── uninstall.sh         # Linux 卸载脚本
 │   ├── install_windows.py   # Windows 安装脚本
-│   └── uninstall_windows.py # Windows 卸载脚本
+│   ├── uninstall_windows.py # Windows 卸载脚本
+│   ├── package_windows.sh   # Windows 打包脚本
+│   └── package_macos.sh     # macOS 打包脚本
 ├── requirements.txt         # Python 依赖
 ├── README.md                # 项目说明
-└── README-Windows.md        # Windows 说明
+├── README-Windows.md        # Windows 说明
+└── README-macOS.md          # macOS 说明
 ```
 
 ### 技术栈
@@ -212,37 +227,6 @@ OK
 | Medium AI | 0.26s |
 | Hard AI | 4.2s |
 | Expert AI | 77s |
-| 残局加载 | 0.04μs/次 |
-
----
-
-## 📦 安装部署
-
-### Linux 安装
-
-```bash
-chmod +x scripts/install.sh
-sudo ./scripts/install.sh
-chinese-chess
-```
-
-### Windows 安装
-
-1. 解压下载的压缩包
-2. 双击 `chinese-chess.exe` 运行
-3. 可选：右键桌面快捷方式 → 固定到任务栏
-
-### 卸载
-
-#### Linux
-```bash
-sudo ./scripts/uninstall.sh
-```
-
-#### Windows
-```powershell
-python scripts/uninstall_windows.py
-```
 
 ---
 
@@ -257,12 +241,6 @@ python scripts/uninstall_windows.py
 3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
 5. 创建 Pull Request
-
-### 代码规范
-
-- 遵循 [PEP 8](https://peps.python.org/pep-0008/) 规范
-- 添加必要的注释和文档字符串
-- 提交前运行单元测试
 
 ---
 
@@ -285,8 +263,6 @@ python scripts/uninstall_windows.py
 
 - [GitHub 仓库](https://github.com/ken780814/Chinese-Chess)
 - [Release 下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v1.0)
-  - [Linux 版本](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz)
-  - [Windows 版本](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz)
 - [开发计划](Chinese-Chess-dev-plan.md)
 
 ---
