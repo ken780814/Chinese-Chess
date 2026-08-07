@@ -1,4 +1,4 @@
-# 中国象棋 - 移动端版本 (Android/iOS)
+# 中国象棋移动端版本说明
 
 ## 系统要求
 
@@ -65,6 +65,25 @@ bash scripts/package_mobile.sh
 - **音频**: pygame
 - **打包工具**: Buildozer
 - **开发语言**: Python 3.8+
+
+## 常见问题
+
+### Q: 为什么没有预编译的 APK/IPA？
+A: 由于移动端打包需要特定的开发环境（Android SDK / Xcode），目前仅提供源码，用户可自行编译。
+
+### Q: 如何编译 APK？
+A: 
+```bash
+pip3 install buildozer cython
+buildozer android debug
+```
+
+### Q: 如何编译 IPA？
+A: 需要 macOS 系统：
+```bash
+pip3 install buildozer cython
+buildozer ios debug
+```
 
 ## 许可证
 
