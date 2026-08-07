@@ -1,4 +1,4 @@
-# 中国象棋 - 全平台版本
+# 中国象棋 - Chinese Chess
 
 <div align="center">
 
@@ -13,6 +13,7 @@
 ![iOS](https://img.shields.io/badge/iOS-12.0%2B-blue.svg)
 
 **一款功能丰富的中国象棋桌面游戏，支持五级平台和触屏操作**
+**A feature-rich Chinese Chess desktop game supporting 5 platforms and touch controls**
 
 [![GitHub release](https://img.shields.io/github/v/release/ken780814/Chinese-Chess)](https://github.com/ken780814/Chinese-Chess/releases)
 [![GitHub stars](https://img.shields.io/github/stars/ken780814/Chinese-Chess)](https://github.com/ken780814/Chinese-Chess/stargazers)
@@ -22,11 +23,13 @@
 
 ---
 
-## 📖 项目简介
+## 📖 项目简介 / About
 
 中国象棋（Chinese Chess / Xiangqi）是中国传统棋类运动，拥有数千年的历史。本项目使用 Python 开发了一款功能丰富的桌面象棋游戏，支持人机对战、残局挑战等多种模式，并提供多平台版本。
 
-### ✨ 核心特性
+Chinese Chess (Xiangqi) is a traditional Chinese board game with thousands of years of history. This project is a feature-rich desktop chess game developed with Python, supporting human vs AI battles, endgame challenges, and multiple platform versions.
+
+### ✨ 核心特性 / Core Features
 
 | 特性 | 描述 |
 |------|------|
@@ -40,19 +43,19 @@
 
 ---
 
-## 🚀 快速开始
+## 🚀 快速开始 / Quick Start
 
-### 下载 Release
+### 下载 Release / Download Release
 
 | 平台 | 下载链接 | 状态 |
 |------|----------|------|
-| 🐧 **Linux x64** | [下载 APK](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz) | ✅ 已发布 |
-| 🪟 **Windows x64** | [下载 EXE](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz) | ✅ 已发布 |
-| 🍎 **macOS x64** | [下载 APP](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-macos-x64.tar.gz) | ✅ 已发布 |
-| 📱 **Android** | [从源码编译](https://github.com/ken780814/Chinese-Chess#-移动端版本) | ⏳ 提供打包脚本 |
-| 📱 **iOS** | [从源码编译](https://github.com/ken780814/Chinese-Chess#-移动端版本) | ⏳ 提供打包脚本 |
+| 🐧 **Linux x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz) | ✅ 已发布 |
+| 🪟 **Windows x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz) | ✅ 已发布 |
+| 🍎 **macOS x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-macos-x64.tar.gz) | ✅ 已发布 |
+| 📱 **Android** | [从源码编译](#-移动端版本) | ⏳ 提供打包脚本 |
+| 📱 **iOS** | [从源码编译](#-移动端版本) | ⏳ 提供打包脚本 |
 
-### 从源码运行
+### 从源码运行 / Run from Source
 
 ```bash
 # 安装依赖
@@ -70,9 +73,9 @@ python3 main_mobile.py
 
 ---
 
-## 📱 移动端版本
+## 📱 移动端版本 / Mobile Version
 
-### 系统要求
+### 系统要求 / System Requirements
 
 #### Android
 - Android 5.0+ (API 21+)
@@ -84,14 +87,14 @@ python3 main_mobile.py
 - 1GB 内存以上
 - 100MB 存储空间
 
-### 屏幕自适应
+### 屏幕自适应 / Screen Adaptation
 
 - ✅ 自动适配不同屏幕尺寸
 - ✅ 竖屏设计，适合手机操作
 - ✅ 触控友好，点击即走棋
-- ✅ 高清显示支持 (Retina)
+- ✅ 高清显示支持
 
-### 触摸控制
+### 触摸控制 / Touch Controls
 
 | 操作 | 说明 |
 |------|------|
@@ -99,7 +102,7 @@ python3 main_mobile.py
 | 点击目标格 | 移动棋子 |
 | 点击按钮 | 切换难度/重新开始 |
 
-### 打包为 APK (Android)
+### 打包为 APK / Build APK (Android)
 
 ```bash
 # 安装 Buildozer
@@ -109,7 +112,7 @@ pip3 install buildozer cython
 bash scripts/package_mobile.sh android
 ```
 
-### 打包为 IPA (iOS)
+### 打包为 IPA / Build IPA (iOS)
 
 ```bash
 # 需要 macOS 和 Xcode
@@ -118,11 +121,11 @@ bash scripts/package_mobile.sh ios
 
 ---
 
-## 🎮 游戏功能
+## 🎮 游戏功能 / Game Features
 
-### 1. 人机对战
+### 1. 人机对战 / Human vs AI
 
-#### AI 难度级别
+#### AI 难度级别 / AI Difficulty Levels
 
 | 难度 | 名称 | 搜索深度 | 说明 |
 |------|------|----------|------|
@@ -131,22 +134,22 @@ bash scripts/package_mobile.sh ios
 | 🟠 | 高级 | depth=3 | 更强的搜索，适合进阶玩家 |
 | 🔴 | 终极高手 | depth=4 | 最强 AI，适合挑战高手 |
 
-#### 游戏控制
+#### 游戏控制 / Game Controls
 
 - **选择棋子**: 点击棋盘上的棋子
 - **移动棋子**: 点击目标位置（绿色圆点提示合法走法）
 - **重新开始**: 点击"重新开始"按钮
 - **切换难度**: 使用下拉菜单选择 AI 难度
 
-#### 计时系统
+#### 计时系统 / Timer System
 
 - 每方 **60 秒**限时
 - 超时后 AI 自动走一步
 - 实时显示剩余时间
 
-### 2. 残局挑战
+### 2. 残局挑战 / Endgame Challenges
 
-#### 残局列表
+#### 残局列表 / Endgame List
 
 | 编号 | 残局名 | 难度 | 描述 | 解法步数 |
 |------|--------|------|------|----------|
@@ -165,9 +168,9 @@ bash scripts/package_mobile.sh ios
 
 ---
 
-## 🏗️ 技术架构
+## 🏗️ 技术架构 / Technical Architecture
 
-### 项目结构
+### 项目结构 / Project Structure
 
 ```
 Chinese-Chess/
@@ -205,7 +208,7 @@ Chinese-Chess/
 └── README-Mobile.md         # 移动端说明
 ```
 
-### 技术栈
+### 技术栈 / Tech Stack
 
 | 平台 | 技术 | 版本 |
 |------|------|------|
@@ -217,21 +220,21 @@ Chinese-Chess/
 
 ---
 
-## 🧪 测试
+## 🧪 测试 / Testing
 
-### 运行单元测试
+### 运行单元测试 / Run Unit Tests
 
 ```bash
 python3 -m unittest tests/test_chinese_chess.py -v
 ```
 
-### 性能测试
+### 性能测试 / Performance Test
 
 ```bash
 python3 tests/benchmark.py
 ```
 
-### 测试结果
+### 测试结果 / Test Results
 
 ```
 Ran 17 tests in 83.065s
@@ -240,7 +243,7 @@ OK
 
 ---
 
-## 📊 性能数据
+## 📊 性能数据 / Performance Data
 
 | 模块 | 性能 |
 |------|------|
@@ -252,11 +255,11 @@ OK
 
 ---
 
-## 🤝 贡献指南
+## 🤝 贡献指南 / Contribution Guide
 
 欢迎提交 Issue 和 Pull Request！
 
-### 开发流程
+### 开发流程 / Development Process
 
 1. Fork 本仓库
 2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
@@ -266,13 +269,13 @@ OK
 
 ---
 
-## 📄 许可证
+## 📄 许可证 / License
 
 本项目采用 [MIT License](LICENSE) 开源许可。
 
 ---
 
-## 🙏 致谢
+## 🙏 致谢 / Acknowledgments
 
 - [PyQt5](https://www.riverbankcomputing.com/software/pyqt/) - 桌面图形界面
 - [Kivy](https://kivy.org/) - 移动图形界面
@@ -283,7 +286,7 @@ OK
 
 ---
 
-## 🔗 相关链接
+## 🔗 相关链接 / Related Links
 
 - [GitHub 仓库](https://github.com/ken780814/Chinese-Chess)
 - [Release 下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v1.0)
