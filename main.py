@@ -8,7 +8,7 @@ import sys
 import argparse
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QHBoxLayout, QPushButton, QLabel, QMessageBox,
-                             QStackedWidget, QComboBox, QFrame)
+                             QStackedWidget)
 from PyQt5.QtCore import Qt
 from gui.board import BoardWidget
 from gui.endgame import EndgameWidget
@@ -102,7 +102,6 @@ class ChineseChessApp(QMainWindow):
         game_over = self.game_widget.make_move(from_row, from_col, to_row, to_col)
         
         if not game_over:
-            # AI 走棋
             self._make_ai_move()
     
     def _on_endgame_move(self, from_row, from_col, to_row, to_col):
@@ -145,12 +144,15 @@ def main():
     parser = argparse.ArgumentParser(description='中国象棋')
     parser.add_argument('--mode', type=str, choices=['game', 'endgame'],
                        default='game', help='游戏模式')
+    parser.add_argument('--no-sound', action='store_true', help='禁用音效')
     args = parser.parse_args()
     
     app = QApplication(sys.argv)
     window = ChineseChessApp()
     
-    # 根据参数启动相应模式
+    if args.no_sound:
+        print("音效已禁用")
+    
     if args.mode == 'game':
         window._start_game()
     elif args.mode == 'endgame':

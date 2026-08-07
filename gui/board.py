@@ -1,26 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-中国象棋 - 棋盘界面
-使用 PyQt5 实现图形界面
+中国象棋 - 游戏界面（带音效）
 """
 
 import sys
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QHBoxLayout, QPushButton, QLabel, QMessageBox,
-                             QComboBox, QFrame)
+                             QComboBox, QFrame, QSlider)
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import QPainter, QColor, QFont, QPixmap
+from PyQt5.QtGui import QPainter, QColor, QFont
 from engine.rules import Board, Rules
 from engine.ai import AI
+from engine.sound import SoundManager
 
 
 class BoardWidget(QWidget):
     """棋盘组件"""
     
     # 信号
-    move_requested = pyqtSignal(int, int, int, int)  # from_row, from_col, to_row, to_col
-    game_started = pyqtSignal(str)  # player color
+    move_requested = pyqtSignal(int, int, int, int)
+    game_started = pyqtSignal(str)
     
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -28,8 +28,8 @@ class BoardWidget(QWidget):
         self.board = Board()
         self.board.reset()
         
-        self.selected_piece = None  # (row, col)
-        self.valid_moves = []  # [(row, col), ...]
+        self.selected_piece = None
+        self.valid_moves = []
         
         self.cell_size = 60
         self.padding = 40
@@ -42,10 +42,13 @@ class BoardWidget(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self._on_timeout)
         
-        self.time_limit = 60  # 秒
+        self.time_limit = 60
         self.red_time = self.time_limit
         self.black_time = self.time_limit
         self.current_timer = None
+        
+        # 音效
+        self.sound_mgr = SoundManager()
         
         self.setup_ui()
         self.setMinimumSize(600, 700)
@@ -57,14 +60,20 @@ class BoardWidget(QWidget):
         # 控制面板
         control_layout = QHBoxLayout()
         
-        # 难度选择
         control_layout.addWidget(QLabel("难度:"))
         self.difficulty_combo = QComboBox()
         self.difficulty_combo.addItems(['初级', '中级', '高级', '终极高手'])
         self.difficulty_combo.currentTextChanged.connect(self._on_difficulty_changed)
         control_layout.addWidget(self.difficulty_combo)
         
-        # 重新开始按钮
+        # 音量控制
+        control_layout.addWidget(QLabel("音量:"))
+        self.volume_slider = QSlider(Qt.Horizontal)
+        self.volume_slider.setRange(0, 100)
+        self.volume_slider.setValue(80)
+        self.volume_slider.valueChanged.connect(self._on_volume_changed)
+        control_layout.addWidget(self.volume_slider)
+        
         self.restart_btn = QPushButton("重新开始")
         self.restart_btn.clicked.connect(self.restart_game)
         control_layout.addWidget(self.restart_btn)
@@ -72,8 +81,6 @@ class BoardWidget(QWidget):
         layout.addLayout(control_layout)
         
         # 棋盘区域
-        self.board_label = QLabel()
-        self.board_label.setAlignment(Qt.AlignCenter)
         self.paint_area = PaintArea(self)
         layout.addWidget(self.paint_area)
         
@@ -117,13 +124,11 @@ class BoardWidget(QWidget):
                 painter.drawLine(x, self.padding + 5 * self.cell_size, x, self.padding + 9 * self.cell_size)
         
         # 绘制九宫格斜线
-        # 红方九宫
         painter.drawLine(self.padding + 3 * self.cell_size, self.padding + 7 * self.cell_size,
                         self.padding + 5 * self.cell_size, self.padding + 9 * self.cell_size)
         painter.drawLine(self.padding + 5 * self.cell_size, self.padding + 7 * self.cell_size,
                         self.padding + 3 * self.cell_size, self.padding + 9 * self.cell_size)
         
-        # 黑方九宫
         painter.drawLine(self.padding + 3 * self.cell_size, self.padding,
                         self.padding + 5 * self.cell_size, self.padding + 2 * self.cell_size)
         painter.drawLine(self.padding + 5 * self.cell_size, self.padding,
@@ -132,8 +137,8 @@ class BoardWidget(QWidget):
         # 绘制楚河汉界
         painter.setFont(QFont("SimSun", 24, QFont.Bold))
         painter.setPen(QColor(139, 69, 19))
-        painter.drawText(self.padding + 2 * self.cell_size, self.padding + 4.5 * self.cell_size, "楚 河",)
-        painter.drawText(self.padding + 5 * self.cell_size, self.padding + 4.5 * self.cell_size, "汉 界",)
+        painter.drawText(self.padding + 2 * self.cell_size, self.padding + 4.5 * self.cell_size, "楚 河")
+        painter.drawText(self.padding + 5 * self.cell_size, self.padding + 4.5 * self.cell_size, "汉 界")
         
         # 绘制棋子
         for row in range(10):
@@ -164,7 +169,6 @@ class BoardWidget(QWidget):
         piece_type = piece['type']
         color = piece['color']
         
-        # 棋子背景
         if color == 'red':
             painter.setBrush(QColor(220, 20, 60))
             painter.setPen(QColor(180, 0, 0))
@@ -174,7 +178,6 @@ class BoardWidget(QWidget):
         
         painter.drawEllipse(x - 25, y - 25, 50, 50)
         
-        # 棋子文字
         painter.setPen(QColor(255, 255, 255) if color == 'black' else QColor(255, 215, 0))
         painter.setFont(QFont("SimHei", 20, QFont.Bold))
         
@@ -207,13 +210,16 @@ class BoardWidget(QWidget):
         piece = self.board.get_piece(row, col)
         
         if self.selected_piece is None:
-            # 选择棋子
             if piece and piece['color'] == self.player_color:
                 self.selected_piece = (row, col)
-                self.valid_moves = Rules.get_valid_moves(self.board, row, col)
+                self.valid_moves = Rules.get_all_moves(self.board, self.player_color, check_check=False)
+                self.valid_moves = [(r, c) for r, c in self.valid_moves if (r, c) != (row, col)]
+                self.valid_moves = [(to_r, to_c) for fr, fc, to_r, to_c in 
+                                   Rules.get_all_moves(self.board, self.player_color) 
+                                   if fr == row and fc == col]
+                self.sound_mgr.play_select()
                 self.update()
         else:
-            # 尝试移动
             if (row, col) in self.valid_moves:
                 from_row, from_col = self.selected_piece
                 self.move_requested.emit(from_row, from_col, row, col)
@@ -221,9 +227,11 @@ class BoardWidget(QWidget):
                 self.valid_moves = []
                 self.update()
             elif piece and piece['color'] == self.player_color:
-                # 重新选择
                 self.selected_piece = (row, col)
-                self.valid_moves = Rules.get_valid_moves(self.board, row, col)
+                self.valid_moves = [(to_r, to_c) for fr, fc, to_r, to_c in 
+                                   Rules.get_all_moves(self.board, self.player_color) 
+                                   if fr == row and fc == col]
+                self.sound_mgr.play_select()
                 self.update()
             else:
                 self.selected_piece = None
@@ -234,12 +242,23 @@ class BoardWidget(QWidget):
         """执行移动"""
         captured = self.board.move_piece(from_row, from_col, to_row, to_col)
         
+        # 播放音效
+        if captured:
+            self.sound_mgr.play_capture()
+        else:
+            self.sound_mgr.play_move()
+        
         # 检查是否将死
         opponent_color = 'black' if self.player_color == 'red' else 'red'
         if Rules.is_checkmate(self.board, opponent_color):
+            self.sound_mgr.play_checkmate()
             self.status_label.setText(f"游戏结束！{self.player_color.capitalize()} 获胜！")
             QMessageBox.information(self, "游戏结束", f"{self.player_color.capitalize()} 获胜！")
             return True
+        
+        # 检查是否将军
+        if Rules._is_king_in_check(self.board, opponent_color):
+            self.sound_mgr.play_check()
         
         # 切换回合
         self._start_timer(opponent_color)
@@ -266,6 +285,7 @@ class BoardWidget(QWidget):
             self.red_time -= 1
             self.red_time_label.setText(f"红方: {self.red_time}s")
             if self.red_time <= 0:
+                self.sound_mgr.play_timeout()
                 self.status_label.setText("红方超时，黑方获胜！")
                 QMessageBox.warning(self, "超时", "红方超时，黑方获胜！")
                 self.timer.stop()
@@ -274,6 +294,7 @@ class BoardWidget(QWidget):
             self.black_time -= 1
             self.black_time_label.setText(f"黑方: {self.black_time}s")
             if self.black_time <= 0:
+                self.sound_mgr.play_timeout()
                 self.status_label.setText("黑方超时，红方获胜！")
                 QMessageBox.warning(self, "超时", "黑方超时，红方获胜！")
                 self.timer.stop()
@@ -290,6 +311,10 @@ class BoardWidget(QWidget):
         self.difficulty = difficulty_map.get(difficulty, 'medium')
         self.ai = AI(difficulty=self.difficulty)
     
+    def _on_volume_changed(self, value):
+        """音量改变"""
+        self.sound_mgr.set_volume(value / 100)
+    
     def restart_game(self):
         """重新开始游戏"""
         self.board.reset()
@@ -302,9 +327,9 @@ class BoardWidget(QWidget):
         self.current_timer = None
         self.timer.stop()
         self.status_label.setText("游戏开始，红方先行")
+        self.sound_mgr.play_game_start()
         self.update()
         
-        # 开始红方计时
         self._start_timer('red')
 
 
@@ -317,7 +342,6 @@ class PaintArea(QWidget):
     
     def paintEvent(self, event):
         painter = QPainter(self)
-        # 这里可以绘制额外的图形
         pass
 
 
