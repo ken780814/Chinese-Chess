@@ -65,7 +65,7 @@ Chinese-Chess/
 │   ├── rules.py         # 游戏规则
 │   └── ai.py            # AI 引擎
 ├── data/
-│   └── endgames.json    # 残局数据
+│   └── endgames.py      # 残局数据
 ├── assets/              # 资源文件
 ├── scripts/
 │   ├── install.sh       # 安装脚本
