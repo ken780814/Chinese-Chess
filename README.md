@@ -1,15 +1,18 @@
-# 中国象棋 - Chinese Chess
+# 中国象棋 - 全平台版本
 
 <div align="center">
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![PyQt5](https://img.shields.io/badge/PyQt5-5.15+-green.svg)
+![Kivy](https://img.shields.io/badge/Kivy-2.2+-purple.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Linux](https://img.shields.io/badge/Linux-x86_64-orange.svg)
 ![Windows](https://img.shields.io/badge/Windows-10%2F11-blue.svg)
 ![macOS](https://img.shields.io/badge/macOS-10.13%2B-purple.svg)
+![Android](https://img.shields.io/badge/Android-5.0%2B-green.svg)
+![iOS](https://img.shields.io/badge/iOS-12.0%2B-blue.svg)
 
-**一款功能丰富的中国象棋桌面游戏，支持四级 AI 难度和残局挑战**
+**一款功能丰富的中国象棋桌面游戏，支持五级平台和触屏操作**
 
 [![GitHub release](https://img.shields.io/github/v/release/ken780814/Chinese-Chess)](https://github.com/ken780814/Chinese-Chess/releases)
 [![GitHub stars](https://img.shields.io/github/stars/ken780814/Chinese-Chess)](https://github.com/ken780814/Chinese-Chess/stargazers)
@@ -21,49 +24,96 @@
 
 ## 📖 项目简介
 
-中国象棋（Chinese Chess / Xiangqi）是中国传统棋类运动，拥有数千年的历史。本项目使用 Python 和 PyQt5 开发了一款功能丰富的桌面象棋游戏，支持人机对战、残局挑战等多种模式。
+中国象棋（Chinese Chess / Xiangqi）是中国传统棋类运动，拥有数千年的历史。本项目使用 Python 开发了一款功能丰富的桌面象棋游戏，支持人机对战、残局挑战等多种模式，并提供多平台版本。
 
 ### ✨ 核心特性
 
 | 特性 | 描述 |
 |------|------|
-| 🎮 **四级 AI 难度** | 初级（随机）、中级（MiniMax depth=2）、高级（depth=3）、终极高手（depth=4） |
+| 🎮 **五级 AI 难度** | 初级（随机）、中级（MiniMax depth=2）、高级（depth=3）、终极高手（depth=4） |
 | 🧩 **12 个经典残局** | 单车破士、双车挫、马后炮、一车十子寒、双马饮泉等 |
 | ⏱️ **计时系统** | 每方 60 秒限时，超时自动走棋 |
 | 🔊 **音效支持** | 走棋、吃子、将军、胜利、失败等音效 |
-| 🎨 **精美界面** | PyQt5 图形界面，清晰美观的棋盘和棋子 |
-| 📦 **一键安装** | 提供安装/卸载脚本，支持桌面快捷方式 |
+| 🎨 **精美界面** | PyQt5/Kivy 图形界面，自适应屏幕尺寸 |
+| 📱 **多平台支持** | Linux、Windows、macOS、Android、iOS |
 | ✅ **完整测试** | 17 个单元测试全部通过 |
 
 ---
 
 ## 🚀 快速开始
 
-### 系统要求
-
-| 平台 | 要求 |
-|------|------|
-| **Linux** | Linux (x86_64), OpenGL/X11, 256MB 内存 |
-| **Windows** | Windows 10/11 (64位), DirectX 9.0c, 256MB 内存 |
-| **macOS** | macOS 10.13+ (High Sierra), 256MB 内存 |
-
 ### 下载 Release
 
-[![GitHub Release](https://img.shields.io/github/downloads/ken780814/Chinese-Chess/total?style=for-the-badge)](https://github.com/ken780814/Chinese-Chess/releases)
-
-| 平台 | 下载链接 |
-|------|----------|
-| 🐧 **Linux x64** | [Chinese-Chess-v1.0-linux-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz) |
-| 🪟 **Windows x64** | [Chinese-Chess-v1.0-windows-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz) |
-| 🍎 **macOS x64** | [Chinese-Chess-v1.0-macos-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-macos-x64.tar.gz) |
+| 平台 | 下载链接 | 大小 |
+|------|----------|------|
+| 🐧 **Linux x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz) | 74 MB |
+| 🪟 **Windows x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz) | 74 MB |
+| 🍎 **macOS x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-macos-x64.tar.gz) | 74 MB |
+| 📱 **Android** | 从源码编译 | - |
+| 📱 **iOS** | 从源码编译 | - |
 
 ### 从源码运行
 
 ```bash
+# 安装依赖
 git clone https://github.com/ken780814/Chinese-Chess.git
 cd Chinese-Chess
+
+# 桌面版
 pip3 install -r requirements.txt
 python3 main.py
+
+# 移动端
+pip3 install -r requirements-mobile.txt
+python3 main_mobile.py
+```
+
+---
+
+## 📱 移动端版本
+
+### 系统要求
+
+#### Android
+- Android 5.0+ (API 21+)
+- 1GB 内存以上
+- 100MB 存储空间
+
+#### iOS
+- iOS 12.0+
+- 1GB 内存以上
+- 100MB 存储空间
+
+### 屏幕自适应
+
+- ✅ 自动适配不同屏幕尺寸
+- ✅ 竖屏设计，适合手机操作
+- ✅ 触控友好，点击即走棋
+- ✅ 高清显示支持 (Retina)
+
+### 触摸控制
+
+| 操作 | 说明 |
+|------|------|
+| 点击棋子 | 选中棋子 |
+| 点击目标格 | 移动棋子 |
+| 点击按钮 | 切换难度/重新开始 |
+
+### 打包为 APK (Android)
+
+```bash
+# 安装 Buildozer
+pip3 install buildozer cython
+
+# 打包
+buildozer android debug
+```
+
+### 打包为 IPA (iOS)
+
+```bash
+# 需要 macOS 和 Xcode
+buildozer ios debug
 ```
 
 ---
@@ -115,50 +165,17 @@ python3 main.py
 
 ---
 
-## 📦 各平台运行方式
-
-### Linux
-
-```bash
-# 解压
-tar -xzf Chinese-Chess-v1.0-linux-x64.tar.gz
-cd Chinese-Chess-v1.0
-
-# 运行
-./chinese-chess
-./chinese-chess --mode=endgame
-./chinese-chess --no-sound
-```
-
-### Windows
-
-```cmd
-# 解压后运行
-chinese-chess.exe
-chinese-chess.exe --mode=endgame
-chinese-chess.exe --no-sound
-```
-
-### macOS
-
-```bash
-# 解压后运行
-open 中国象棋.app
-open -a 中国象棋 --args --mode=endgame
-```
-
----
-
 ## 🏗️ 技术架构
 
 ### 项目结构
 
 ```
 Chinese-Chess/
-├── main.py                  # 主程序入口
+├── main.py                  # 桌面版主程序 (PyQt5)
+├── main_mobile.py           # 移动版主程序 (Kivy)
 ├── gui/
 │   ├── board.py             # 棋盘界面 (PyQt5)
-│   └── endgame.py           # 残局挑战界面
+│   └── endgame.py           # 残局界面
 ├── engine/
 │   ├── rules.py             # 游戏规则引擎
 │   ├── ai.py                # AI 引擎 (MiniMax + α-β剪枝)
@@ -166,8 +183,8 @@ Chinese-Chess/
 ├── data/
 │   └── endgames.py          # 残局数据 (12个)
 ├── assets/
-│   ├── icon.png             # 程序图标 (256x256)
-│   └── *.png                # 棋子图标 (64x64)
+│   ├── icon.png             # 程序图标
+│   └── *.png                # 棋子图标
 ├── tests/
 │   ├── test_chinese_chess.py # 单元测试 (17个)
 │   └── benchmark.py          # 性能测试
@@ -177,20 +194,25 @@ Chinese-Chess/
 │   ├── install_windows.py   # Windows 安装脚本
 │   ├── uninstall_windows.py # Windows 卸载脚本
 │   ├── package_windows.sh   # Windows 打包脚本
-│   └── package_macos.sh     # macOS 打包脚本
-├── requirements.txt         # Python 依赖
+│   ├── package_macos.sh     # macOS 打包脚本
+│   └── package_mobile.sh    # 移动端打包脚本
+├── requirements.txt         # 桌面版依赖
+├── requirements-mobile.txt  # 移动版依赖
+├── buildozer.spec           # Android 构建配置
 ├── README.md                # 项目说明
 ├── README-Windows.md        # Windows 说明
-└── README-macOS.md          # macOS 说明
+├── README-macOS.md          # macOS 说明
+└── README-Mobile.md         # 移动端说明
 ```
 
 ### 技术栈
 
-| 模块 | 技术 | 版本 |
+| 平台 | 技术 | 版本 |
 |------|------|------|
-| 图形界面 | PyQt5 | >=5.15.0 |
+| 桌面版 UI | PyQt5 | >=5.15.0 |
+| 移动版 UI | Kivy | >=2.2.0 |
 | 音频播放 | pygame | >=2.0.0 |
-| 打包工具 | PyInstaller | 6.21.0 |
+| 打包工具 | PyInstaller/Buildozer | 最新 |
 | 开发语言 | Python | 3.8+ |
 
 ---
@@ -252,9 +274,11 @@ OK
 
 ## 🙏 致谢
 
-- [PyQt5](https://www.riverbankcomputing.com/software/pyqt/) - 图形界面框架
+- [PyQt5](https://www.riverbankcomputing.com/software/pyqt/) - 桌面图形界面
+- [Kivy](https://kivy.org/) - 移动图形界面
 - [pygame](https://www.pygame.org/) - 音频播放库
 - [PyInstaller](https://www.pyinstaller.org/) - Python 打包工具
+- [Buildozer](https://buildozer.readthedocs.io/) - Android/iOS 打包
 - 中国象棋残局数据库 - 提供经典残局布局
 
 ---
