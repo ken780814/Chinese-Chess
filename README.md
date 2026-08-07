@@ -5,7 +5,8 @@
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![PyQt5](https://img.shields.io/badge/PyQt5-5.15+-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Platform](https://img.shields.io/badge/Platform-Linux%20x86_64-orange.svg)
+![Linux](https://img.shields.io/badge/Linux-x86_64-orange.svg)
+![Windows](https://img.shields.io/badge/Windows-10%2F11-blue.svg)
 
 **一款功能丰富的中国象棋桌面游戏，支持四级 AI 难度和残局挑战**
 
@@ -39,35 +40,46 @@
 
 ### 系统要求
 
-- **操作系统**: Linux (x86_64)
-- **内存**: 256 MB 以上
-- **磁盘**: 100 MB 以上
-- **显卡**: 支持 OpenGL/X11
-- **Python**: 3.8+ (已内置于打包版本)
+| 平台 | 要求 |
+|------|------|
+| **Linux** | Linux (x86_64), OpenGL/X11, 256MB 内存 |
+| **Windows** | Windows 10/11 (64位), DirectX 9.0c, 256MB 内存 |
 
 ### 下载安装
 
+#### Linux 版本
+
 ```bash
-# 方式一：从 GitHub Release 下载
+# 下载
 wget https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz
 tar -xzf Chinese-Chess-v1.0-linux-x64.tar.gz
 cd Chinese-Chess-v1.0
-./chinese-chess
 
-# 方式二：从源码运行
+# 运行
+./chinese-chess
+```
+
+#### Windows 版本
+
+1. 下载 [Chinese-Chess-v1.0-windows-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz)
+2. 解压到任意目录
+3. 双击 `chinese-chess.exe` 运行
+
+```cmd
+# 命令行运行
+chinese-chess.exe              # 开始游戏
+chinese-chess.exe --mode=endgame  # 残局挑战
+chinese-chess.exe --no-sound   # 禁用音效
+```
+
+### 从源码运行
+
+```bash
 git clone https://github.com/ken780814/Chinese-Chess.git
 cd Chinese-Chess
 pip3 install -r requirements.txt
 python3 main.py
 ```
-
-### 运行参数
-
-| 参数 | 说明 |
-|------|------|
-| `./chinese-chess` | 开始游戏（默认中级难度） |
-| `./chinese-chess --mode=endgame` | 直接进入残局挑战模式 |
-| `./chinese-chess --no-sound` | 禁用音效 |
 
 ---
 
@@ -133,33 +145,28 @@ python3 main.py
 Chinese-Chess/
 ├── main.py                  # 主程序入口
 ├── gui/
-│   ├── __init__.py
 │   ├── board.py             # 棋盘界面 (PyQt5)
 │   └── endgame.py           # 残局挑战界面
 ├── engine/
-│   ├── __init__.py
 │   ├── rules.py             # 游戏规则引擎
 │   ├── ai.py                # AI 引擎 (MiniMax + α-β剪枝)
 │   └── sound.py             # 音效管理 (pygame)
 ├── data/
-│   ├── __init__.py
 │   └── endgames.py          # 残局数据 (12个)
 ├── assets/
 │   ├── icon.png             # 程序图标 (256x256)
-│   ├── *.png                # 棋子图标 (64x64)
-│   └── sounds/              # 音效目录
+│   └── *.png                # 棋子图标 (64x64)
 ├── tests/
-│   ├── __init__.py
 │   ├── test_chinese_chess.py # 单元测试 (17个)
 │   └── benchmark.py          # 性能测试
 ├── scripts/
-│   ├── install.sh           # 安装脚本
-│   ├── uninstall.sh         # 卸载脚本
-│   └── package.sh           # 打包脚本
+│   ├── install.sh           # Linux 安装脚本
+│   ├── uninstall.sh         # Linux 卸载脚本
+│   ├── install_windows.py   # Windows 安装脚本
+│   └── uninstall_windows.py # Windows 卸载脚本
 ├── requirements.txt         # Python 依赖
-├── .gitignore
 ├── README.md                # 项目说明
-└── Chinese-Chess-dev-plan.md  # 开发计划
+└── README-Windows.md        # Windows 说明
 ```
 
 ### 技术栈
@@ -178,7 +185,6 @@ Chinese-Chess/
 ### 运行单元测试
 
 ```bash
-cd Chinese-Chess
 python3 -m unittest tests/test_chinese_chess.py -v
 ```
 
@@ -215,24 +221,27 @@ OK
 ### Linux 安装
 
 ```bash
-# 方式一：安装脚本
 chmod +x scripts/install.sh
 sudo ./scripts/install.sh
-
-# 运行游戏
 chinese-chess
+```
 
-# 卸载
+### Windows 安装
+
+1. 解压下载的压缩包
+2. 双击 `chinese-chess.exe` 运行
+3. 可选：右键桌面快捷方式 → 固定到任务栏
+
+### 卸载
+
+#### Linux
+```bash
 sudo ./scripts/uninstall.sh
 ```
 
-### 打包发布
-
-```bash
-# 使用 PyInstaller 打包
-bash scripts/package.sh
-
-# 输出目录: release/Chinese-Chess-v1.0/
+#### Windows
+```powershell
+python scripts/uninstall_windows.py
 ```
 
 ---
@@ -276,6 +285,8 @@ bash scripts/package.sh
 
 - [GitHub 仓库](https://github.com/ken780814/Chinese-Chess)
 - [Release 下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v1.0)
+  - [Linux 版本](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz)
+  - [Windows 版本](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz)
 - [开发计划](Chinese-Chess-dev-plan.md)
 
 ---
