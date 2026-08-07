@@ -1,8 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-中国象棋 - 移动端版本 (Android/iOS)
-基于 Kivy 框架，支持触屏操作
+中国象棋 - 移动端版本
+使用 Kivy + Buildozer 打包为 APK/IPA
+
+运行方式:
+  1. 直接运行 (需要 Python + Kivy):
+     pip3 install kivy pygame
+     python3 main_mobile.py
+
+  2. 打包为 APK (Android):
+     pip3 install buildozer
+     buildozer android debug
+
+  3. 打包为 IPA (iOS):
+     buildozer ios debug
 """
 
 import sys
@@ -22,9 +34,15 @@ Config.set('graphics', 'multisamples', '0')
 
 # 导入游戏引擎
 sys.path.insert(0, os.path.dirname(__file__))
-from engine.rules import Board, Rules
-from engine.ai import AI
-from engine.sound import SoundManager
+try:
+    from engine.rules import Board, Rules
+    from engine.ai import AI
+    from engine.sound import SoundManager
+except ImportError:
+    # 移动端可能需要不同的导入路径
+    from engine.rules import Board, Rules
+    from engine.ai import AI
+    from engine.sound import SoundManager
 
 
 class ChessBoardWidget(BoxLayout):
@@ -61,7 +79,6 @@ class ChessBoardWidget(BoxLayout):
     
     def _calculate_layout(self):
         """计算布局参数"""
-        # 获取窗口大小
         width, height = Window.size
         
         # 棋盘区域

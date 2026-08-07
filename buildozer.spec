@@ -1,8 +1,5 @@
-#!/bin/bash
-# 中国象棋 - Android 构建配置
-
-# 项目配置
-app_name = ChineseChess
+[app]
+title = Chinese Chess
 package.name = chinese_chess
 package.domain = org.chinesechess
 source.dir = .
@@ -13,17 +10,14 @@ orientation = portrait
 android.api = 31
 android.minapi = 21
 android.ndk = 23b
-android.sdk = 31
 log_level = 2
-wheels = 
 p4a.keep_venv = 1
 
-# 权限
-android.permissions =
+[buildozer]
+default = android
 
-# 图标
-android.icon = assets/icon.png
-android.apptheme = @android:style/Theme.NoTitleBar
-
-# 启动画面
-android.splash = assets/icon.png
+[android]
+permissions =
+icon = assets/icon.png
+apptheme = @android:style/Theme.NoTitleBar
+splash = assets/icon.png

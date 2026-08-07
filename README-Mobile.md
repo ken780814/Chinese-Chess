@@ -1,4 +1,4 @@
-# 中国象棋移动端版本说明
+# 中国象棋 - 移动端版本 (Android/iOS)
 
 ## 系统要求
 
@@ -36,19 +36,19 @@ pip3 install -r requirements-mobile.txt
 python3 main_mobile.py
 ```
 
-### 方式二：打包为 APK（Android）
+### 方式二：打包为 APK (Android)
 ```bash
-# 安装 Buildozer
+# 安装依赖
 pip3 install buildozer cython
 
 # 打包
-bash scripts/package_mobile.sh
+bash scripts/package_mobile.sh android
 ```
 
-### 方式三：打包为 IPA（iOS）
+### 方式三：打包为 IPA (iOS)
 ```bash
 # 需要 macOS 和 Xcode
-bash scripts/package_mobile.sh
+bash scripts/package_mobile.sh ios
 ```
 
 ## 触摸控制
@@ -68,21 +68,21 @@ bash scripts/package_mobile.sh
 
 ## 常见问题
 
-### Q: 为什么没有预编译的 APK/IPA？
-A: 由于移动端打包需要特定的开发环境（Android SDK / Xcode），目前仅提供源码，用户可自行编译。
+### Q: 为什么没有预编译的 APK？
+A: 移动端打包需要特定的开发环境（Android SDK），由于服务器权限限制，目前提供打包脚本和源码。
 
 ### Q: 如何编译 APK？
 A: 
 ```bash
 pip3 install buildozer cython
-buildozer android debug
+bash scripts/package_mobile.sh android
 ```
 
 ### Q: 如何编译 IPA？
 A: 需要 macOS 系统：
 ```bash
 pip3 install buildozer cython
-buildozer ios debug
+bash scripts/package_mobile.sh ios
 ```
 
 ## 许可证

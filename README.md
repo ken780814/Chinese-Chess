@@ -44,13 +44,13 @@
 
 ### 下载 Release
 
-| 平台 | 下载链接 | 大小 |
+| 平台 | 下载链接 | 状态 |
 |------|----------|------|
-| 🐧 **Linux x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz) | 74 MB |
-| 🪟 **Windows x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz) | 74 MB |
-| 🍎 **macOS x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-macos-x64.tar.gz) | 74 MB |
-| 📱 **Android** | 从源码编译 | - |
-| 📱 **iOS** | 从源码编译 | - |
+| 🐧 **Linux x64** | [下载 APK](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz) | ✅ 已发布 |
+| 🪟 **Windows x64** | [下载 EXE](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz) | ✅ 已发布 |
+| 🍎 **macOS x64** | [下载 APP](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-macos-x64.tar.gz) | ✅ 已发布 |
+| 📱 **Android** | [从源码编译](https://github.com/ken780814/Chinese-Chess#-移动端版本) | ⏳ 提供打包脚本 |
+| 📱 **iOS** | [从源码编译](https://github.com/ken780814/Chinese-Chess#-移动端版本) | ⏳ 提供打包脚本 |
 
 ### 从源码运行
 
@@ -106,14 +106,14 @@ python3 main_mobile.py
 pip3 install buildozer cython
 
 # 打包
-buildozer android debug
+bash scripts/package_mobile.sh android
 ```
 
 ### 打包为 IPA (iOS)
 
 ```bash
 # 需要 macOS 和 Xcode
-buildozer ios debug
+bash scripts/package_mobile.sh ios
 ```
 
 ---

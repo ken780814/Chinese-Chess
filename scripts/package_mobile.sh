@@ -1,5 +1,8 @@
 #!/bin/bash
-# 中国象棋 - Android/iOS 打包脚本
+# 中国象棋 - 移动端一键打包脚本
+# 支持 Android APK 和 iOS IPA
+
+set -e
 
 echo "=== 中国象棋移动端打包程序 ==="
 
@@ -11,16 +14,29 @@ fi
 
 # 安装依赖
 echo "正在安装依赖..."
-pip3 install kivy pygame cython buildozer -q
+pip3 install -r requirements-mobile.txt -q
+pip3 install buildozer cython -q
 
 # 清理旧构建
-rm -rf .buildozer dist
+rm -rf .buildozer dist bin
 
-echo "开始打包..."
-
-# 使用 Buildozer 打包
-buildozer android debug 2>&1 || buildozer ios debug 2>&1
-
-echo ""
-echo "=== 打包完成 ==="
-echo "输出目录: dist/"
+# 检查参数
+if [ "$1" == "android" ]; then
+    echo "开始打包 Android APK..."
+    buildozer android debug
+    echo ""
+    echo "=== Android 打包完成 ==="
+    ls -lh bin/*.apk 2>/dev/null || echo "APK 文件在 bin/ 目录"
+elif [ "$1" == "ios" ]; then
+    echo "开始打包 iOS IPA..."
+    buildozer ios debug
+    echo ""
+    echo "=== iOS 打包完成 ==="
+    ls -lh dist/*.ipa 2>/dev/null || echo "IPA 文件在 dist/ 目录"
+else
+    echo "用法:"
+    echo "  bash scripts/package_mobile.sh android  # 打包 Android APK"
+    echo "  bash scripts/package_mobile.sh ios      # 打包 iOS IPA"
+    echo ""
+    echo "注意: iOS 打包需要 macOS 系统和 Xcode"
+fi
