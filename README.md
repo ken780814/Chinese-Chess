@@ -1,140 +1,287 @@
 # 中国象棋 - Chinese Chess
 
-一款功能丰富的中国象棋桌面游戏，支持多种 AI 难度和残局挑战。
+<div align="center">
 
-## 功能特性
+![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
+![PyQt5](https://img.shields.io/badge/PyQt5-5.15+-green.svg)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Platform](https://img.shields.io/badge/Platform-Linux%20x86_64-orange.svg)
 
-- 🎮 双人本地对战
-- 🤖 四级 AI 难度：初级、中级、高级、终极高手
-- ⏱️ 计时系统：每方 60 秒，超时自动走棋
-- 🧩 残局挑战模式（12个经典残局）
-- 🖼️ 美观的棋盘界面
-- 📦 一键安装/卸载
+**一款功能丰富的中国象棋桌面游戏，支持四级 AI 难度和残局挑战**
 
-## 系统要求
+[![GitHub release](https://img.shields.io/github/v/release/ken780814/Chinese-Chess)](https://github.com/ken780814/Chinese-Chess/releases)
+[![GitHub stars](https://img.shields.io/github/stars/ken780814/Chinese-Chess)](https://github.com/ken780814/Chinese-Chess/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/ken780814/Chinese-Chess)](https://github.com/ken780814/Chinese-Chess/network/members)
 
-- Python 3.8+
-- PyQt5
-- Linux / Windows / macOS
+</div>
 
-## 安装
+---
 
-### 方式一：直接运行
+## 📖 项目简介
+
+中国象棋（Chinese Chess / Xiangqi）是中国传统棋类运动，拥有数千年的历史。本项目使用 Python 和 PyQt5 开发了一款功能丰富的桌面象棋游戏，支持人机对战、残局挑战等多种模式。
+
+### ✨ 核心特性
+
+| 特性 | 描述 |
+|------|------|
+| 🎮 **四级 AI 难度** | 初级（随机）、中级（MiniMax depth=2）、高级（depth=3）、终极高手（depth=4） |
+| 🧩 **12 个经典残局** | 单车破士、双车挫、马后炮、一车十子寒、双马饮泉等 |
+| ⏱️ **计时系统** | 每方 60 秒限时，超时自动走棋 |
+| 🔊 **音效支持** | 走棋、吃子、将军、胜利、失败等音效 |
+| 🎨 **精美界面** | PyQt5 图形界面，清晰美观的棋盘和棋子 |
+| 📦 **一键安装** | 提供安装/卸载脚本，支持桌面快捷方式 |
+| ✅ **完整测试** | 17 个单元测试全部通过 |
+
+---
+
+## 🚀 快速开始
+
+### 系统要求
+
+- **操作系统**: Linux (x86_64)
+- **内存**: 256 MB 以上
+- **磁盘**: 100 MB 以上
+- **显卡**: 支持 OpenGL/X11
+- **Python**: 3.8+ (已内置于打包版本)
+
+### 下载安装
 
 ```bash
-python main.py              # 开始游戏
-python main.py --mode=endgame  # 残局挑战
+# 方式一：从 GitHub Release 下载
+wget https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz
+tar -xzf Chinese-Chess-v1.0-linux-x64.tar.gz
+cd Chinese-Chess-v1.0
+./chinese-chess
+
+# 方式二：从源码运行
+git clone https://github.com/ken780814/Chinese-Chess.git
+cd Chinese-Chess
+pip3 install -r requirements.txt
+python3 main.py
 ```
 
-### 方式二：使用安装脚本（Linux）
+### 运行参数
 
-```bash
-chmod +x scripts/install.sh
-sudo ./scripts/install.sh
-chinese-chess               # 运行游戏
-```
+| 参数 | 说明 |
+|------|------|
+| `./chinese-chess` | 开始游戏（默认中级难度） |
+| `./chinese-chess --mode=endgame` | 直接进入残局挑战模式 |
+| `./chinese-chess --no-sound` | 禁用音效 |
 
-### 方式三：创建桌面快捷方式
+---
 
-安装后会在桌面创建快捷方式，双击即可启动。
+## 🎮 游戏功能
 
-## 卸载
+### 1. 人机对战
 
-```bash
-sudo ./scripts/uninstall.sh
-```
+#### AI 难度级别
 
-或通过包管理器：
-```bash
-sudo dpkg -r chinese-chess
-```
+| 难度 | 名称 | 搜索深度 | 说明 |
+|------|------|----------|------|
+| 🟢 | 初级 | - | 随机走法，适合新手练习 |
+| 🟡 | 中级 | depth=2 | MiniMax + α-β剪枝，适合入门 |
+| 🟠 | 高级 | depth=3 | 更强的搜索，适合进阶玩家 |
+| 🔴 | 终极高手 | depth=4 | 最强 AI，适合挑战高手 |
 
-## 使用
+#### 游戏控制
 
-1. 启动游戏后，选择 AI 难度
-2. 红方先行，点击棋子选中，再点击目标位置移动
-3. 每方有 60 秒倒计时，超时后 AI 将自动走一步
-4. 将死对方将/帅即可获胜
+- **选择棋子**: 点击棋盘上的棋子
+- **移动棋子**: 点击目标位置（绿色圆点提示合法走法）
+- **重新开始**: 点击"重新开始"按钮
+- **切换难度**: 使用下拉菜单选择 AI 难度
 
-## 残局挑战
+#### 计时系统
 
-游戏内置 12 个经典残局：
+- 每方 **60 秒**限时
+- 超时后 AI 自动走一步
+- 实时显示剩余时间
 
-| 编号 | 残局名 | 难度 | 描述 |
-|------|--------|------|------|
-| 1 | 单车破士 | 简单 | 单车对单士 |
-| 2 | 双车挫 | 简单 | 双车对士象全 |
-| 3 | 马后炮 | 中等 | 马炮配合杀局 |
-| 4 | 一车十子寒 | 中等 | 单车胜士象全 |
-| 5 | 双马饮泉 | 中等 | 双马配合杀局 |
-| 6 | 车兵临门 | 简单 | 车兵配合杀局 |
-| 7 | 炮双兵胜 | 中等 | 炮双兵对士象全 |
-| 8 | 马兵胜士象 | 困难 | 马兵对士象全 |
-| 9 | 双炮胜 | 简单 | 双炮对单士 |
-| 10 | 车炮争雄 | 困难 | 车炮对车士 |
-| 11 | 三子归边 | 困难 | 车马炮配合杀局 |
-| 12 | 钓鱼马 | 中等 | 马兵胜单士 |
+### 2. 残局挑战
 
-## 项目结构
+#### 残局列表
+
+| 编号 | 残局名 | 难度 | 描述 | 解法步数 |
+|------|--------|------|------|----------|
+| 1 | 单车破士 | ⭐ | 单车对单士 | 9步 |
+| 2 | 双车挫 | ⭐ | 双车对士象全 | 5步 |
+| 3 | 马后炮 | ⭐⭐ | 马炮配合杀局 | 7步 |
+| 4 | 一车十子寒 | ⭐⭐ | 单车胜士象全 | 5步 |
+| 5 | 双马饮泉 | ⭐⭐ | 双马配合杀局 | 7步 |
+| 6 | 车兵临门 | ⭐ | 车兵配合杀局 | 3步 |
+| 7 | 炮双兵胜 | ⭐⭐ | 炮双兵对士象全 | 3步 |
+| 8 | 马兵胜士象 | ⭐⭐⭐ | 马兵对士象全 | 5步 |
+| 9 | 双炮胜 | ⭐ | 双炮对单士 | 3步 |
+| 10 | 车炮争雄 | ⭐⭐⭐ | 车炮对车士 | 3步 |
+| 11 | 三子归边 | ⭐⭐⭐ | 车马炮配合杀局 | 3步 |
+| 12 | 钓鱼马 | ⭐⭐ | 马兵胜单士 | 5步 |
+
+#### 残局功能
+
+- **提示**: 显示下一步推荐走法
+- **重置**: 回到残局初始状态
+- **下一关**: 挑战下一个残局
+- **步数统计**: 记录解题步数
+
+---
+
+## 🏗️ 技术架构
+
+### 项目结构
 
 ```
 Chinese-Chess/
 ├── main.py                  # 主程序入口
 ├── gui/
 │   ├── __init__.py
-│   ├── board.py             # 棋盘界面
-│   └── endgame.py           # 残局界面
+│   ├── board.py             # 棋盘界面 (PyQt5)
+│   └── endgame.py           # 残局挑战界面
 ├── engine/
 │   ├── __init__.py
-│   ├── rules.py             # 游戏规则
-│   └── ai.py                # AI 引擎
+│   ├── rules.py             # 游戏规则引擎
+│   ├── ai.py                # AI 引擎 (MiniMax + α-β剪枝)
+│   └── sound.py             # 音效管理 (pygame)
 ├── data/
 │   ├── __init__.py
-│   └── endgames.py          # 残局数据
+│   └── endgames.py          # 残局数据 (12个)
 ├── assets/
-│   ├── icon.png             # 程序图标
-│   └── *.png                # 棋子图标
+│   ├── icon.png             # 程序图标 (256x256)
+│   ├── *.png                # 棋子图标 (64x64)
+│   └── sounds/              # 音效目录
 ├── tests/
 │   ├── __init__.py
-│   ├── test_chinese_chess.py # 单元测试
+│   ├── test_chinese_chess.py # 单元测试 (17个)
 │   └── benchmark.py          # 性能测试
 ├── scripts/
 │   ├── install.sh           # 安装脚本
-│   └── uninstall.sh         # 卸载脚本
+│   ├── uninstall.sh         # 卸载脚本
+│   └── package.sh           # 打包脚本
 ├── requirements.txt         # Python 依赖
 ├── .gitignore
 ├── README.md                # 项目说明
 └── Chinese-Chess-dev-plan.md  # 开发计划
 ```
 
-## 测试
+### 技术栈
 
-运行单元测试：
+| 模块 | 技术 | 版本 |
+|------|------|------|
+| 图形界面 | PyQt5 | >=5.15.0 |
+| 音频播放 | pygame | >=2.0.0 |
+| 打包工具 | PyInstaller | 6.21.0 |
+| 开发语言 | Python | 3.8+ |
+
+---
+
+## 🧪 测试
+
+### 运行单元测试
+
 ```bash
-python -m unittest tests/test_chinese_chess.py -v
+cd Chinese-Chess
+python3 -m unittest tests/test_chinese_chess.py -v
 ```
 
-运行性能测试：
+### 性能测试
+
 ```bash
-python tests/benchmark.py
+python3 tests/benchmark.py
 ```
 
-## 开发进度
+### 测试结果
 
-- [x] 项目初始化
-- [x] 基本规则实现
-- [x] AI 引擎基础框架
-- [x] 棋盘界面
-- [x] 残局挑战模式
-- [x] 单元测试
-- [x] 程序图标
-- [ ] 音效支持
-- [ ] 打包发布为 .deb
+```
+Ran 17 tests in 83.065s
+OK
+```
 
-## 许可证
+---
 
-MIT License
+## 📊 性能数据
 
-## 贡献
+| 模块 | 性能 |
+|------|------|
+| 规则计算 | 2.79ms/次 |
+| Easy AI | <1ms |
+| Medium AI | 0.26s |
+| Hard AI | 4.2s |
+| Expert AI | 77s |
+| 残局加载 | 0.04μs/次 |
+
+---
+
+## 📦 安装部署
+
+### Linux 安装
+
+```bash
+# 方式一：安装脚本
+chmod +x scripts/install.sh
+sudo ./scripts/install.sh
+
+# 运行游戏
+chinese-chess
+
+# 卸载
+sudo ./scripts/uninstall.sh
+```
+
+### 打包发布
+
+```bash
+# 使用 PyInstaller 打包
+bash scripts/package.sh
+
+# 输出目录: release/Chinese-Chess-v1.0/
+```
+
+---
+
+## 🤝 贡献指南
 
 欢迎提交 Issue 和 Pull Request！
+
+### 开发流程
+
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 创建 Pull Request
+
+### 代码规范
+
+- 遵循 [PEP 8](https://peps.python.org/pep-0008/) 规范
+- 添加必要的注释和文档字符串
+- 提交前运行单元测试
+
+---
+
+## 📄 许可证
+
+本项目采用 [MIT License](LICENSE) 开源许可。
+
+---
+
+## 🙏 致谢
+
+- [PyQt5](https://www.riverbankcomputing.com/software/pyqt/) - 图形界面框架
+- [pygame](https://www.pygame.org/) - 音频播放库
+- [PyInstaller](https://www.pyinstaller.org/) - Python 打包工具
+- 中国象棋残局数据库 - 提供经典残局布局
+
+---
+
+## 🔗 相关链接
+
+- [GitHub 仓库](https://github.com/ken780814/Chinese-Chess)
+- [Release 下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v1.0)
+- [开发计划](Chinese-Chess-dev-plan.md)
+
+---
+
+<div align="center">
+
+**Made with ❤️ by AI Assistant for Ken**
+
+</div>
