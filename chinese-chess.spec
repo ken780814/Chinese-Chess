@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('assets', 'assets'), ('data', 'data'), ('gui', 'gui'), ('engine', 'engine')],
+    datas=[('assets', 'chinese-chess/assets'), ('data', 'chinese-chess/data'), ('gui', 'chinese-chess/gui'), ('engine', 'chinese-chess/engine')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-中国象棋 - 创建 DEB 包
+中国象棋 - 创建 DEB 包（修复路径问题）
 """
 
 import os
@@ -12,7 +12,7 @@ APP_NAME = "chinese-chess"
 VERSION = "1.0.0"
 
 def main():
-    print("=== 创建 DEB 包 ===\n")
+    print("=== 创建 DEB 包（修复路径问题）===\n")
     
     # 清理
     shutil.rmtree("deb-build", ignore_errors=True)
@@ -32,18 +32,18 @@ def main():
     os.makedirs(f"{pkg_dir}/usr/share/{APP_NAME}/data", exist_ok=True)
     os.makedirs(f"{pkg_dir}/DEBIAN", exist_ok=True)
     
-    # 复制文件（如果 pyinstaller 已经构建过）
-    exe_path = "dist/chinese-chess"
-    if not os.path.exists(exe_path):
-        print("需要先运行 PyInstaller...")
-        subprocess.run(["pyinstaller", "--onefile", "--windowed", "--name", APP_NAME,
-                       "--add-data", "assets:assets",
-                       "--add-data", "data:data",
-                       "--add-data", "gui:gui",
-                       "--add-data", "engine:engine",
-                       "--noconfirm", "main.py"], check=True)
+    # 构建应用程序
+    print("正在构建应用程序...")
+    subprocess.run(["pyinstaller", "--onefile", "--windowed", "--name", APP_NAME,
+                   "--add-data", f"assets:{APP_NAME}/assets",
+                   "--add-data", f"data:{APP_NAME}/data",
+                   "--add-data", f"gui:{APP_NAME}/gui",
+                   "--add-data", f"engine:{APP_NAME}/engine",
+                   "--noconfirm", "main.py"], check=True)
     
-    shutil.copy2(exe_path, f"{pkg_dir}/usr/bin/{APP_NAME}")
+    # 复制文件
+    print("正在复制文件...")
+    shutil.copy2(f"dist/{APP_NAME}", f"{pkg_dir}/usr/bin/{APP_NAME}")
     os.chmod(f"{pkg_dir}/usr/bin/{APP_NAME}", 0o755)
     
     # 复制资源
@@ -53,12 +53,12 @@ def main():
     
     # 创建桌面文件
     with open(f"{pkg_dir}/usr/share/applications/{APP_NAME}.desktop", "w") as f:
-        f.write("""[Desktop Entry]
+        f.write(f"""[Desktop Entry]
 Name=Chinese Chess
 Name[zh_CN]=中国象棋
 Comment=A feature-rich Chinese Chess game
 Comment[zh_CN]=一款功能丰富的中国象棋游戏
-Exec=/usr/bin/chinese-chess
+Exec=/usr/bin/{APP_NAME}
 Icon=chinese-chess
 Terminal=false
 Type=Application
@@ -70,7 +70,7 @@ StartupNotify=false
     if os.path.exists("assets/icon.png"):
         shutil.copy2("assets/icon.png", f"{pkg_dir}/usr/share/icons/hicolor/256x256/apps/chinese-chess.png")
     
-    # 创建控制文件 - 关键修复：使用 libgl1 而不是 libgl1-mesa-glx
+    # 创建控制文件
     with open(f"{pkg_dir}/DEBIAN/control", "w") as f:
         f.write(f"""Package: {APP_NAME}
 Version: {VERSION}
