@@ -31,14 +31,14 @@ Chinese Chess (Xiangqi) is a traditional Chinese board game with thousands of ye
 
 ### ✨ 核心特性 / Core Features
 
-| 特性 | 描述 |
+| 特性 / Feature | 描述 / Description |
 |------|------|
 | 🎮 **五级 AI 难度** | 初级（随机）、中级（MiniMax depth=2）、高级（depth=3）、终极高手（depth=4） |
 | 🧩 **12 个经典残局** | 单车破士、双车挫、马后炮、一车十子寒、双马饮泉等 |
 | ⏱️ **计时系统** | 每方 60 秒限时，超时自动走棋 |
 | 🔊 **音效支持** | 走棋、吃子、将军、胜利、失败等音效 |
 | 🎨 **精美界面** | PyQt5/Kivy 图形界面，自适应屏幕尺寸 |
-| 📱 **多平台支持** | Linux、Windows、macOS、Android、iOS |
+| 📱 **多平台支持** | Linux (DEB)、Windows (EXE)、macOS (APP)、Android、iOS |
 | ✅ **完整测试** | 17 个单元测试全部通过 |
 
 ---
@@ -47,13 +47,14 @@ Chinese Chess (Xiangqi) is a traditional Chinese board game with thousands of ye
 
 ### 下载 Release / Download Release
 
-| 平台 | 下载链接 | 状态 |
-|------|----------|------|
-| 🐧 **Linux x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz) | ✅ 已发布 |
-| 🪟 **Windows x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz) | ✅ 已发布 |
-| 🍎 **macOS x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-macos-x64.tar.gz) | ✅ 已发布 |
-| 📱 **Android** | [从源码编译](#-移动端版本) | ⏳ 提供打包脚本 |
-| 📱 **iOS** | [从源码编译](#-移动端版本) | ⏳ 提供打包脚本 |
+| 平台 / Platform | 下载链接 / Download | 格式 / Format |
+|-----------------|---------------------|---------------|
+| 🐧 **Linux x64** | [chinese-chess_1.0.0_amd64.deb](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/chinese-chess_1.0.0_amd64.deb) | .deb 包 |
+| 🐧 **Linux (Tar)** | [Chinese-Chess-v1.0-linux-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz) | tar.gz |
+| 🪟 **Windows x64** | [Chinese-Chess-v1.0-windows-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz) | tar.gz |
+| 🍎 **macOS x64** | [Chinese-Chess-v1.0-macos-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-macos-x64.tar.gz) | tar.gz |
+| 📱 **Android** | [从源码编译](#-移动端版本) | 源码 |
+| 📱 **iOS** | [从源码编译](#-移动端版本) | 源码 |
 
 ### 从源码运行 / Run from Source
 
@@ -96,7 +97,7 @@ python3 main_mobile.py
 
 ### 触摸控制 / Touch Controls
 
-| 操作 | 说明 |
+| 操作 / Action | 说明 / Description |
 |------|------|
 | 点击棋子 | 选中棋子 |
 | 点击目标格 | 移动棋子 |
@@ -198,11 +199,13 @@ Chinese-Chess/
 │   ├── uninstall_windows.py # Windows 卸载脚本
 │   ├── package_windows.sh   # Windows 打包脚本
 │   ├── package_macos.sh     # macOS 打包脚本
+│   ├── package_deb.sh       # DEB 打包脚本
 │   └── package_mobile.sh    # 移动端打包脚本
 ├── requirements.txt         # 桌面版依赖
 ├── requirements-mobile.txt  # 移动版依赖
 ├── buildozer.spec           # Android 构建配置
 ├── README.md                # 项目说明
+├── README-Linux.md          # Linux 说明
 ├── README-Windows.md        # Windows 说明
 ├── README-macOS.md          # macOS 说明
 └── README-Mobile.md         # 移动端说明
