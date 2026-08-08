@@ -25,7 +25,7 @@ sudo apt install ./chinese-chess_1.0.0_amd64.deb
 ### 方式二：使用 dpkg 安装 / Method 2: Use dpkg
 ```bash
 # 1. 安装依赖 / Install dependencies
-sudo apt-get install -y libgl1 libglib2.0-0 libsm6 libxtst6
+sudo apt-get install -y libgl1 libglib2.0-0 libsm6 libxtst6 libx11-6
 
 # 2. 安装 DEB 包 / Install DEB package
 sudo dpkg -i chinese-chess_1.0.0_amd64.deb
@@ -83,10 +83,10 @@ sudo apt remove chinese-chess
 
 ## 常见问题 / FAQ
 
-### Q: 安装时提示缺少 libgl1-mesa-glx
-A: 运行 `sudo apt-get install -y libgl1 libgl1-mesa-glx` 自动修复
-**Q: Missing libgl1-mesa-glx error**
-A: Run `sudo apt-get install -y libgl1 libgl1-mesa-glx` to fix automatically
+### Q: 安装时提示缺少依赖
+A: 运行 `sudo apt-get install -y libgl1 libglib2.0-0 libsm6 libxtst6 libx11-6` 自动修复
+**Q: Missing dependencies error**
+A: Run `sudo apt-get install -y libgl1 libglib2.0-0 libsm6 libxtst6 libx11-6` to fix automatically
 
 ### Q: 黑屏或无法显示
 A: 请确保已安装 OpenGL 驱动
