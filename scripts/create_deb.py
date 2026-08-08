@@ -20,6 +20,10 @@ def main():
         for f in os.listdir("dist"):
             if f.endswith(".deb"):
                 os.remove(os.path.join("dist", f))
+    if os.path.exists("build"):
+        shutil.rmtree("build")
+    if os.path.exists(f"{APP_NAME}.spec"):
+        os.remove(f"{APP_NAME}.spec")
     
     # 创建目录
     pkg_dir = f"deb-build/{APP_NAME}_{VERSION}"
@@ -123,6 +127,16 @@ exit 0
     result = subprocess.run(["dpkg-deb", "--field", f"dist/{APP_NAME}_{VERSION}_amd64.deb", "Depends"],
                           capture_output=True, text=True)
     print(f"  {result.stdout.strip()}")
+    
+    # 检查内容
+    print("\n包内容检查:")
+    result = subprocess.run(["dpkg-deb", "--contents", f"dist/{APP_NAME}_{VERSION}_amd64.deb"],
+                          capture_output=True, text=True)
+    lines = result.stdout.split("\n")
+    asset_lines = [l for l in lines if "assets" in l.lower() and ".png" in l.lower()]
+    print(f"  图片资源: {len(asset_lines)} 个")
+    for line in asset_lines[:5]:
+        print(f"    {line}")
 
 if __name__ == "__main__":
     main()
