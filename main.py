@@ -44,16 +44,17 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont, QPixmap, QIcon
 
-# 导入游戏模块 - 使用正确的路径
+# 导入游戏模块 - 使用正确的类名
 from engine.rules import Rules
 from engine.ai import AI
-from gui.endgame import EndgameMode
+from gui.board import BoardWidget
+from gui.endgame import EndgameWidget
 
 class ChineseChessApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.rules = Rules()
-        self.ai = AI(self.rules)
+        self.ai = AI()
         self.board = self.rules.initial_board()
         self.current_turn = 'red'  # red 先走
         self.selected_piece = None
@@ -129,7 +130,7 @@ class ChineseChessApp(QMainWindow):
         
     def start_endgame(self):
         """开始残局模式"""
-        self.endgame_mode = EndgameMode()
+        self.endgame_mode = EndgameWidget()
         self.current_endgame = 0
         self.show_endgame(self.current_endgame)
         
@@ -223,113 +224,6 @@ class ChineseChessApp(QMainWindow):
     def update_timer_label(self):
         """更新计时器显示"""
         self.timer_label.setText('红方: %d秒 | 黑方: %d秒' % (self.red_time, self.black_time))
-
-
-class BoardWidget(QFrame):
-    piece_clicked = pyqtSignal(int, int)
-    cell_clicked = pyqtSignal(int, int)
-    
-    def __init__(self, rules, board):
-        super().__init__()
-        self.rules = rules
-        self.board = board
-        self.selected_cell = None
-        self.highlighted_cells = []
-        
-        self.setFixedSize(450, 500)
-        self.setStyleSheet('QFrame { background-color: #F5DEB3; border: 2px solid #8B4513; }')
-        
-    def update_board(self, board):
-        self.board = board
-        self.highlighted_cells = []
-        self.update()
-        
-    def highlight_piece(self, row, col):
-        self.highlighted_cells = [(row, col)]
-        self.update()
-        
-    def clear_highlight(self):
-        self.highlighted_cells = []
-        self.update()
-        
-    def paintEvent(self, event):
-        from PyQt5.QtGui import QPainter, QPen, QBrush, QFont
-        from PyQt5.QtCore import Qt
-        
-        painter = QPainter(self)
-        painter.setPen(QPen(Qt.black, 2))
-        
-        # 绘制棋盘
-        cell_size = 50
-        margin = 25
-        
-        # 横线
-        for i in range(9):
-            painter.drawLine(margin, margin + i * cell_size, 
-                           margin + 8 * cell_size, margin + i * cell_size)
-        
-        # 竖线
-        for i in range(9):
-            if i == 0 or i == 8:
-                painter.drawLine(margin + i * cell_size, margin,
-                               margin + i * cell_size, margin + 8 * cell_size)
-            else:
-                # 上半部分
-                painter.drawLine(margin + i * cell_size, margin,
-                               margin + i * cell_size, margin + 4 * cell_size)
-                # 下半部分
-                painter.drawLine(margin + i * cell_size, margin + 5 * cell_size,
-                               margin + i * cell_size, margin + 8 * cell_size)
-        
-        # 绘制楚河汉界
-        painter.setFont(QFont('SimSun', 16))
-        painter.drawText(margin + 2 * cell_size, margin + 4 * cell_size + 15, '楚河')
-        painter.drawText(margin + 5 * cell_size, margin + 4 * cell_size + 15, '汉界')
-        
-        # 绘制棋子
-        for row in range(10):
-            for col in range(9):
-                piece = self.board[row][col]
-                if piece:
-                    x = margin + col * cell_size
-                    y = margin + row * cell_size
-                    
-                    # 高亮选中
-                    if (row, col) in self.highlighted_cells:
-                        painter.setBrush(QBrush(Qt.yellow))
-                    else:
-                        painter.setBrush(QBrush(Qt.white))
-                    
-                    painter.drawEllipse(x - 20, y - 20, 40, 40)
-                    
-                    # 绘制棋子文字
-                    painter.setPen(QPen(Qt.black if piece['color'] == 'red' else Qt.red, 2))
-                    painter.setFont(QFont('SimSun', 14, QFont.Bold))
-                    painter.drawText(x - 15, y + 5, piece['name'])
-                    
-                    # 绘制合法走法提示
-                    if (row, col) in self.highlighted_cells:
-                        moves = self.rules.get_valid_moves(self.board, row, col)
-                        for mr, mc in moves:
-                            mx = margin + mc * cell_size
-                            my = margin + mr * cell_size
-                            painter.setBrush(QBrush(Qt.green))
-                            painter.drawEllipse(mx - 5, my - 5, 10, 10)
-    
-    def mousePressEvent(self, event):
-        cell_size = 50
-        margin = 25
-        
-        col = (event.x() - margin) // cell_size
-        row = (event.y() - margin) // cell_size
-        
-        if 0 <= row <= 8 and 0 <= col <= 8:
-            # 检查是否点击了棋子
-            piece = self.board[row][col]
-            if piece:
-                self.piece_clicked.emit(row, col)
-            else:
-                self.cell_clicked.emit(row, col)
 
 
 def main():

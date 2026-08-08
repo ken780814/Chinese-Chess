@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-中国象棋 - 创建 DEB 包（修复导入问题）
+中国象棋 - 创建 DEB 包
 """
 
 import os
@@ -12,7 +12,7 @@ APP_NAME = "chinese-chess"
 VERSION = "1.0.0"
 
 def main():
-    print("=== 创建 DEB 包（修复导入问题）===\n")
+    print("=== 创建 DEB 包 ===\n")
     
     # 清理
     shutil.rmtree("deb-build", ignore_errors=True)
@@ -36,7 +36,7 @@ def main():
     os.makedirs(f"{pkg_dir}/usr/share/{APP_NAME}/data", exist_ok=True)
     os.makedirs(f"{pkg_dir}/DEBIAN", exist_ok=True)
     
-    # 构建应用程序 - 关键修复：使用正确的模块路径
+    # 构建应用程序
     print("正在构建应用程序...")
     subprocess.run(["pyinstaller", "--onefile", "--windowed", "--name", APP_NAME,
                    "--add-data", f"assets:{APP_NAME}/assets",
