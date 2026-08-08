@@ -44,10 +44,10 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont, QPixmap, QIcon
 
-# 导入游戏模块
-from rules import Rules
-from ai import AI
-from endgame import EndgameMode
+# 导入游戏模块 - 使用正确的路径
+from engine.rules import Rules
+from engine.ai import AI
+from gui.endgame import EndgameMode
 
 class ChineseChessApp(QMainWindow):
     def __init__(self):

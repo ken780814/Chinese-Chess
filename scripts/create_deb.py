@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-中国象棋 - 创建 DEB 包（修复路径问题）
+中国象棋 - 创建 DEB 包（修复导入问题）
 """
 
 import os
@@ -12,7 +12,7 @@ APP_NAME = "chinese-chess"
 VERSION = "1.0.0"
 
 def main():
-    print("=== 创建 DEB 包（修复路径问题）===\n")
+    print("=== 创建 DEB 包（修复导入问题）===\n")
     
     # 清理
     shutil.rmtree("deb-build", ignore_errors=True)
@@ -36,13 +36,19 @@ def main():
     os.makedirs(f"{pkg_dir}/usr/share/{APP_NAME}/data", exist_ok=True)
     os.makedirs(f"{pkg_dir}/DEBIAN", exist_ok=True)
     
-    # 构建应用程序
+    # 构建应用程序 - 关键修复：使用正确的模块路径
     print("正在构建应用程序...")
     subprocess.run(["pyinstaller", "--onefile", "--windowed", "--name", APP_NAME,
                    "--add-data", f"assets:{APP_NAME}/assets",
-                   "--add-data", f"data:{APP_NAME}/data",
-                   "--add-data", f"gui:{APP_NAME}/gui",
                    "--add-data", f"engine:{APP_NAME}/engine",
+                   "--add-data", f"gui:{APP_NAME}/gui",
+                   "--add-data", f"data:{APP_NAME}/data",
+                   "--hidden-import=engine.rules",
+                   "--hidden-import=engine.ai",
+                   "--hidden-import=engine.sound",
+                   "--hidden-import=gui.board",
+                   "--hidden-import=gui.endgame",
+                   "--hidden-import=data.endgames",
                    "--noconfirm", "main.py"], check=True)
     
     # 复制文件
@@ -127,16 +133,6 @@ exit 0
     result = subprocess.run(["dpkg-deb", "--field", f"dist/{APP_NAME}_{VERSION}_amd64.deb", "Depends"],
                           capture_output=True, text=True)
     print(f"  {result.stdout.strip()}")
-    
-    # 检查内容
-    print("\n包内容检查:")
-    result = subprocess.run(["dpkg-deb", "--contents", f"dist/{APP_NAME}_{VERSION}_amd64.deb"],
-                          capture_output=True, text=True)
-    lines = result.stdout.split("\n")
-    asset_lines = [l for l in lines if "assets" in l.lower() and ".png" in l.lower()]
-    print(f"  图片资源: {len(asset_lines)} 个")
-    for line in asset_lines[:5]:
-        print(f"    {line}")
 
 if __name__ == "__main__":
     main()
