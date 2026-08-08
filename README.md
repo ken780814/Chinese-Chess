@@ -38,7 +38,7 @@ Chinese Chess (Xiangqi) is a traditional Chinese board game with thousands of ye
 | ⏱️ **计时系统** | 每方 60 秒限时，超时自动走棋 |
 | 🔊 **音效支持** | 走棋、吃子、将军、胜利、失败等音效 |
 | 🎨 **精美界面** | PyQt5/Kivy 图形界面，自适应屏幕尺寸 |
-| 📱 **多平台支持** | Linux (DEB)、Windows (EXE)、macOS (APP)、Android、iOS |
+| 📱 **多平台支持** | Linux (DEB/Tar)、Windows (EXE)、macOS (APP)、Android、iOS |
 | ✅ **完整测试** | 17 个单元测试全部通过 |
 
 ---
@@ -49,10 +49,9 @@ Chinese Chess (Xiangqi) is a traditional Chinese board game with thousands of ye
 
 | 平台 / Platform | 下载链接 / Download | 格式 / Format |
 |-----------------|---------------------|---------------|
-| 🐧 **Linux x64** | [chinese-chess_1.0.0_amd64.deb](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/chinese-chess_1.0.0_amd64.deb) | .deb 包 |
-| 🐧 **Linux (Tar)** | [Chinese-Chess-v1.0-linux-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz) | tar.gz |
-| 🪟 **Windows x64** | [Chinese-Chess-v1.0-windows-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz) | tar.gz |
-| 🍎 **macOS x64** | [Chinese-Chess-v1.0-macos-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-macos-x64.tar.gz) | tar.gz |
+| 🐧 **Linux x64** | [DEB](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/chinese-chess_1.0.0_amd64.deb) / [Tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz) | .deb / .tar.gz |
+| 🪟 **Windows x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz) | tar.gz |
+| 🍎 **macOS x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-macos-x64.tar.gz) | tar.gz |
 | 📱 **Android** | [从源码编译](#-移动端版本) | 源码 |
 | 📱 **iOS** | [从源码编译](#-移动端版本) | 源码 |
 
