@@ -256,7 +256,7 @@ class EndgameWidget(QWidget):
             'P': '卒' if color == 'black' else '兵',
         }
         
-        painter.drawText(x - 15, y + 7, piece_names.get(piece_type, '?'))
+        painter.drawText(int(x - 15), int(y + 7), piece_names.get(piece_type, '?'))
     
     def mousePressEvent(self, event):
         """鼠标点击事件"""

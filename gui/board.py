@@ -137,8 +137,8 @@ class BoardWidget(QWidget):
         # 绘制楚河汉界
         painter.setFont(QFont("SimSun", 24, QFont.Bold))
         painter.setPen(QColor(139, 69, 19))
-        painter.drawText(self.padding + 2 * self.cell_size, self.padding + 4.5 * self.cell_size, "楚 河")
-        painter.drawText(self.padding + 5 * self.cell_size, self.padding + 4.5 * self.cell_size, "汉 界")
+        painter.drawText(self.padding + 2 * self.cell_size, int(self.padding + 4.5 * self.cell_size), "楚 河")
+        painter.drawText(self.padding + 5 * self.cell_size, int(self.padding + 4.5 * self.cell_size), "汉 界")
         
         # 绘制棋子
         for row in range(10):
@@ -191,7 +191,7 @@ class BoardWidget(QWidget):
             'P': '卒' if color == 'black' else '兵',
         }
         
-        painter.drawText(x - 15, y + 7, piece_names.get(piece_type, '?'))
+        painter.drawText(int(x - 15), int(y + 7), piece_names.get(piece_type, '?'))
     
     def mousePressEvent(self, event):
         """鼠标点击事件"""
