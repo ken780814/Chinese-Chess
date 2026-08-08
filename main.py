@@ -45,7 +45,7 @@ from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont, QPixmap, QIcon
 
 # 导入游戏模块 - 使用正确的类名
-from engine.rules import Rules
+from engine.rules import Rules, Board
 from engine.ai import AI
 from gui.board import BoardWidget
 from gui.endgame import EndgameWidget
@@ -55,7 +55,7 @@ class ChineseChessApp(QMainWindow):
         super().__init__()
         self.rules = Rules()
         self.ai = AI()
-        self.board = self.rules.initial_board()
+        self.board = Board()  # 修复：使用 Board() 而不是 rules.initial_board()
         self.current_turn = 'red'  # red 先走
         self.selected_piece = None
         self.game_mode = 'game'  # 'game' or 'endgame'
@@ -144,7 +144,7 @@ class ChineseChessApp(QMainWindow):
             
     def new_game(self):
         """新游戏"""
-        self.board = self.rules.initial_board()
+        self.board = Board()
         self.current_turn = 'red'
         self.selected_piece = None
         self.red_time = 60
@@ -156,7 +156,7 @@ class ChineseChessApp(QMainWindow):
         
     def on_piece_clicked(self, row, col):
         """点击棋子"""
-        piece = self.board[row][col]
+        piece = self.board.get_piece(row, col)
         if piece and piece['color'] == self.current_turn:
             self.selected_piece = (row, col)
             self.board_widget.highlight_piece(row, col)
@@ -165,7 +165,7 @@ class ChineseChessApp(QMainWindow):
         """点击格子"""
         if self.selected_piece:
             from_row, from_col = self.selected_piece
-            moves = self.rules.get_valid_moves(self.board, from_row, from_col)
+            moves = self.rules.get_all_moves(self.board, self.current_turn)
             if (row, col) in moves:
                 self.make_move(from_row, from_col, row, col)
             self.selected_piece = None
@@ -173,11 +173,11 @@ class ChineseChessApp(QMainWindow):
             
     def make_move(self, from_row, from_col, to_row, to_col):
         """执行走棋"""
-        piece = self.board[from_row][from_col]
-        captured = self.board[to_row][to_col]
+        piece = self.board.get_piece(from_row, from_col)
+        captured = self.board.get_piece(to_row, to_col)
         
         # 执行走棋
-        self.board = self.rules.make_move(self.board, from_row, from_col, to_row, to_col)
+        self.board.move_piece(from_row, from_col, to_row, to_col)
         
         # 切换回合
         self.current_turn = 'black' if self.current_turn == 'red' else 'red'
