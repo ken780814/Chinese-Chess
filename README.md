@@ -38,7 +38,7 @@ Chinese Chess (Xiangqi) is a traditional Chinese board game with thousands of ye
 | ⏱️ **计时系统** | 每方 60 秒限时，超时自动走棋 |
 | 🔊 **音效支持** | 走棋、吃子、将军、胜利、失败等音效 |
 | 🎨 **精美界面** | PyQt5/Kivy 图形界面，自适应屏幕尺寸 |
-| 📱 **多平台支持** | Linux (DEB/Tar)、Windows (EXE)、macOS (APP)、Android、iOS |
+| 📱 **多平台支持** | Linux (DEB)、Windows (EXE)、macOS (APP)、Android、iOS |
 | ✅ **完整测试** | 17 个单元测试全部通过 |
 
 ---
@@ -47,28 +47,31 @@ Chinese Chess (Xiangqi) is a traditional Chinese board game with thousands of ye
 
 ### 下载 Release / Download Release
 
-| 平台 / Platform | 下载链接 / Download | 格式 / Format |
-|-----------------|---------------------|---------------|
-| 🐧 **Linux x64** | [DEB](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/chinese-chess_1.0.0_amd64.deb) / [Tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-linux-x64.tar.gz) | .deb / .tar.gz |
-| 🪟 **Windows x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz) | tar.gz |
-| 🍎 **macOS x64** | [下载](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-macos-x64.tar.gz) | tar.gz |
-| 📱 **Android** | [从源码编译](#-移动端版本) | 源码 |
-| 📱 **iOS** | [从源码编译](#-移动端版本) | 源码 |
+| 平台 / Platform | 下载链接 / Download |
+|-----------------|---------------------|
+| 🐧 **Linux x64** | [chinese-chess_1.0.0_amd64.deb](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/chinese-chess_1.0.0_amd64.deb) |
+| 🐧 **Linux (RPM 格式)** | [chinese-chess-1.0.0.el8.x86_64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/chinese-chess-1.0.0.el8.x86_64.tar.gz) |
+| 🪟 **Windows x64** | [Chinese-Chess-v1.0-windows-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-windows-x64.tar.gz) |
+| 🍎 **macOS x64** | [Chinese-Chess-v1.0-macos-x64.tar.gz](https://github.com/ken780814/Chinese-Chess/releases/download/v1.0/Chinese-Chess-v1.0-macos-x64.tar.gz) |
+| 📱 **Android** | [从源码编译](#-移动端版本) |
+| 📱 **iOS** | [从源码编译](#-移动端版本) |
+
+### Linux 安装（推荐） / Linux Installation (Recommended)
+```bash
+# 方式一：使用 apt 安装（推荐）
+sudo apt install ./chinese-chess_1.0.0_amd64.deb
+
+# 方式二：使用 dpkg 安装
+sudo dpkg -i chinese-chess_1.0.0_amd64.deb
+sudo apt-get install -f  # 修复依赖
+```
 
 ### 从源码运行 / Run from Source
-
 ```bash
-# 安装依赖
 git clone https://github.com/ken780814/Chinese-Chess.git
 cd Chinese-Chess
-
-# 桌面版
 pip3 install -r requirements.txt
 python3 main.py
-
-# 移动端
-pip3 install -r requirements-mobile.txt
-python3 main_mobile.py
 ```
 
 ---
@@ -87,13 +90,6 @@ python3 main_mobile.py
 - 1GB 内存以上
 - 100MB 存储空间
 
-### 屏幕自适应 / Screen Adaptation
-
-- ✅ 自动适配不同屏幕尺寸
-- ✅ 竖屏设计，适合手机操作
-- ✅ 触控友好，点击即走棋
-- ✅ 高清显示支持
-
 ### 触摸控制 / Touch Controls
 
 | 操作 / Action | 说明 / Description |
@@ -103,19 +99,13 @@ python3 main_mobile.py
 | 点击按钮 | 切换难度/重新开始 |
 
 ### 打包为 APK / Build APK (Android)
-
 ```bash
-# 安装 Buildozer
 pip3 install buildozer cython
-
-# 打包
 bash scripts/package_mobile.sh android
 ```
 
 ### 打包为 IPA / Build IPA (iOS)
-
 ```bash
-# 需要 macOS 和 Xcode
 bash scripts/package_mobile.sh ios
 ```
 
@@ -134,22 +124,7 @@ bash scripts/package_mobile.sh ios
 | 🟠 | 高级 | depth=3 | 更强的搜索，适合进阶玩家 |
 | 🔴 | 终极高手 | depth=4 | 最强 AI，适合挑战高手 |
 
-#### 游戏控制 / Game Controls
-
-- **选择棋子**: 点击棋盘上的棋子
-- **移动棋子**: 点击目标位置（绿色圆点提示合法走法）
-- **重新开始**: 点击"重新开始"按钮
-- **切换难度**: 使用下拉菜单选择 AI 难度
-
-#### 计时系统 / Timer System
-
-- 每方 **60 秒**限时
-- 超时后 AI 自动走一步
-- 实时显示剩余时间
-
 ### 2. 残局挑战 / Endgame Challenges
-
-#### 残局列表 / Endgame List
 
 | 编号 | 残局名 | 难度 | 描述 | 解法步数 |
 |------|--------|------|------|----------|
@@ -171,76 +146,27 @@ bash scripts/package_mobile.sh ios
 ## 🏗️ 技术架构 / Technical Architecture
 
 ### 项目结构 / Project Structure
-
 ```
 Chinese-Chess/
 ├── main.py                  # 桌面版主程序 (PyQt5)
 ├── main_mobile.py           # 移动版主程序 (Kivy)
-├── gui/
-│   ├── board.py             # 棋盘界面 (PyQt5)
-│   └── endgame.py           # 残局界面
-├── engine/
-│   ├── rules.py             # 游戏规则引擎
-│   ├── ai.py                # AI 引擎 (MiniMax + α-β剪枝)
-│   └── sound.py             # 音效管理 (pygame)
-├── data/
-│   └── endgames.py          # 残局数据 (12个)
-├── assets/
-│   ├── icon.png             # 程序图标
-│   └── *.png                # 棋子图标
-├── tests/
-│   ├── test_chinese_chess.py # 单元测试 (17个)
-│   └── benchmark.py          # 性能测试
-├── scripts/
-│   ├── install.sh           # Linux 安装脚本
-│   ├── uninstall.sh         # Linux 卸载脚本
-│   ├── install_windows.py   # Windows 安装脚本
-│   ├── uninstall_windows.py # Windows 卸载脚本
-│   ├── package_windows.sh   # Windows 打包脚本
-│   ├── package_macos.sh     # macOS 打包脚本
-│   ├── package_deb.sh       # DEB 打包脚本
-│   └── package_mobile.sh    # 移动端打包脚本
-├── requirements.txt         # 桌面版依赖
-├── requirements-mobile.txt  # 移动版依赖
-├── buildozer.spec           # Android 构建配置
-├── README.md                # 项目说明
-├── README-Linux.md          # Linux 说明
-├── README-Windows.md        # Windows 说明
-├── README-macOS.md          # macOS 说明
-└── README-Mobile.md         # 移动端说明
+├── engine/                  # 游戏引擎
+├── gui/                     # 图形界面
+├── data/                    # 数据文件
+├── assets/                  # 资源文件
+├── tests/                   # 测试
+├── scripts/                 # 脚本
+│   ├── package_deb.sh       # DEB 打包
+│   ├── package_rpm.sh       # RPM 打包
+│   └── package_mobile.sh    # 移动端打包
+└── README*.md               # 文档
 ```
-
-### 技术栈 / Tech Stack
-
-| 平台 | 技术 | 版本 |
-|------|------|------|
-| 桌面版 UI | PyQt5 | >=5.15.0 |
-| 移动版 UI | Kivy | >=2.2.0 |
-| 音频播放 | pygame | >=2.0.0 |
-| 打包工具 | PyInstaller/Buildozer | 最新 |
-| 开发语言 | Python | 3.8+ |
 
 ---
 
 ## 🧪 测试 / Testing
-
-### 运行单元测试 / Run Unit Tests
-
 ```bash
 python3 -m unittest tests/test_chinese_chess.py -v
-```
-
-### 性能测试 / Performance Test
-
-```bash
-python3 tests/benchmark.py
-```
-
-### 测试结果 / Test Results
-
-```
-Ran 17 tests in 83.065s
-OK
 ```
 
 ---
@@ -261,30 +187,20 @@ OK
 
 欢迎提交 Issue 和 Pull Request！
 
-### 开发流程 / Development Process
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 创建 Pull Request
-
 ---
 
 ## 📄 许可证 / License
 
-本项目采用 [MIT License](LICENSE) 开源许可。
+MIT License
 
 ---
 
 ## 🙏 致谢 / Acknowledgments
 
-- [PyQt5](https://www.riverbankcomputing.com/software/pyqt/) - 桌面图形界面
-- [Kivy](https://kivy.org/) - 移动图形界面
-- [pygame](https://www.pygame.org/) - 音频播放库
-- [PyInstaller](https://www.pyinstaller.org/) - Python 打包工具
-- [Buildozer](https://buildozer.readthedocs.io/) - Android/iOS 打包
-- 中国象棋残局数据库 - 提供经典残局布局
+- [PyQt5](https://www.riverbankcomputing.com/software/pyqt/)
+- [Kivy](https://kivy.org/)
+- [pygame](https://www.pygame.org/)
+- [PyInstaller](https://www.pyinstaller.org/)
 
 ---
 
@@ -292,7 +208,6 @@ OK
 
 - [GitHub 仓库](https://github.com/ken780814/Chinese-Chess)
 - [Release 下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v1.0)
-- [开发计划](Chinese-Chess-dev-plan.md)
 
 ---
 

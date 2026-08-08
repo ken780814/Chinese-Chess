@@ -1,9 +1,9 @@
 #!/bin/bash
-# 中国象棋 - DEB 打包脚本
+# 中国象棋 - DEB 打包脚本（修复版）
 
 set -e
 
-echo "=== 中国象棋 DEB 打包程序 ==="
+echo "=== 中国象棋 DEB 打包程序（修复版） ==="
 
 # 检查命令
 if ! command -v dpkg-deb &> /dev/null; then
@@ -71,15 +71,16 @@ EOF
 # 复制图标
 cp assets/icon.png "${PACKAGE_DIR}/usr/share/icons/hicolor/256x256/apps/chinese-chess.png"
 
-# 创建控制文件
+# 创建控制文件（修复依赖）
 mkdir -p "${PACKAGE_DIR}/DEBIAN"
-cat > "${PACKAGE_DIR}/DEBIAN/control" << 'EOF'
-Package: chinese-chess
-Version: 1.0.0
+cat > "${PACKAGE_DIR}/DEBIAN/control" << EOF
+Package: ${APP_NAME}
+Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: amd64
-Depends: python3 (>= 3.8), libgl1-mesa-glx, libglib2.0-0, libsm6, libxtst6
+Depends: python3 (>= 3.8), libgl1, libglib2.0-0, libsm6, libxtst6, libx11-6
+Pre-Depends: dpkg (>= 1.17.11)
 Installed-Size: 80000
 Maintainer: AI Assistant
 Author: AI Assistant for Ken
@@ -93,24 +94,53 @@ EOF
 
 # 创建 postinst 脚本
 cat > "${PACKAGE_DIR}/DEBIAN/postinst" << 'EOF'
-#!/bin/bash
-update-desktop-database -q /usr/share/applications 2>/dev/null || true
-gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor 2>/dev/null || true
+#!/bin/sh
+set -e
+
+# 更新桌面数据库
+if [ -x /usr/bin/update-desktop-database ]; then
+    /usr/bin/update-desktop-database -q 2>/dev/null || true
+fi
+
+# 更新图标缓存
+if [ -x /usr/bin/gtk-update-icon-cache ]; then
+    /usr/bin/gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor 2>/dev/null || true
+fi
+
 exit 0
 EOF
 chmod 755 "${PACKAGE_DIR}/DEBIAN/postinst"
 
 # 创建 prerm 脚本
 cat > "${PACKAGE_DIR}/DEBIAN/prerm" << 'EOF'
-#!/bin/bash
-gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor 2>/dev/null || true
+#!/bin/sh
+set -e
+
+# 更新图标缓存
+if [ -x /usr/bin/gtk-update-icon-cache ]; then
+    /usr/bin/gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor 2>/dev/null || true
+fi
+
 exit 0
 EOF
 chmod 755 "${PACKAGE_DIR}/DEBIAN/prerm"
 
+# 创建 postinst 触发器
+cat > "${PACKAGE_DIR}/DEBIAN/triggers" << 'EOF'
+interested triggers /usr/share/applications /usr/share/icons/hicolor
+EOF
+
 # 打包
 echo "正在打包 DEB 文件..."
 dpkg-deb --build --root-owner-group "${PACKAGE_DIR}" "dist/${APP_NAME}_${VERSION}_amd64.deb"
+
+# 验证 DEB 包
+echo ""
+echo "=== 验证 DEB 包 ==="
+dpkg-deb --info "dist/${APP_NAME}_${VERSION}_amd64.deb"
+echo ""
+echo "依赖检查："
+dpkg-deb --field "dist/${APP_NAME}_${VERSION}_amd64.deb" Depends
 
 # 清理
 rm -rf "${PACKAGE_DIR}"
@@ -121,6 +151,10 @@ ls -lh "dist/${APP_NAME}_${VERSION}_amd64.deb"
 echo ""
 echo "安装方式："
 echo "  sudo dpkg -i dist/${APP_NAME}_${VERSION}_amd64.deb"
+echo "  sudo apt-get install -f  # 修复依赖（推荐）"
+echo ""
+echo "或者使用 apt 安装（自动处理依赖）："
+echo "  sudo apt install ./dist/${APP_NAME}_${VERSION}_amd64.deb"
 echo ""
 echo "卸载方式："
 echo "  sudo apt remove chinese-chess"

@@ -17,17 +17,21 @@
 
 ## 安装方式 / Installation
 
-### 方式一：DEB 包安装 / Method 1: DEB Package
+### 方式一：使用 apt 安装（推荐） / Method 1: Use apt (Recommended)
 ```bash
-sudo dpkg -i chinese-chess_1.0.0_amd64.deb
-sudo apt-get install -f  # 修复依赖
+sudo apt install ./chinese-chess_1.0.0_amd64.deb
 ```
 
-### 方式二：RPM 格式 (tar.gz) / Method 2: RPM Format (tar.gz)
+### 方式二：使用 dpkg 安装 / Method 2: Use dpkg
 ```bash
-# 由于服务器缺少 rpm-build 工具，使用 tar.gz 格式
-sudo tar -xzf chinese-chess-1.0.0.el8.x86_64.tar.gz -C /
-chinese-chess
+# 1. 安装依赖 / Install dependencies
+sudo apt-get install -y libgl1 libglib2.0-0 libsm6 libxtst6
+
+# 2. 安装 DEB 包 / Install DEB package
+sudo dpkg -i chinese-chess_1.0.0_amd64.deb
+
+# 3. 修复依赖 / Fix dependencies
+sudo apt-get install -f
 ```
 
 ### 方式三：从源码编译 / Method 3: Build from Source
@@ -54,17 +58,7 @@ chinese-chess --no-sound         # 禁用音效
 ## 卸载 / Uninstallation
 
 ```bash
-# DEB 系统
 sudo apt remove chinese-chess
-
-# RPM 系统
-sudo dnf remove chinese-chess
-# 或
-sudo yum remove chinese-chess
-
-# Tar.gz 安装
-sudo rm -rf /usr/bin/chinese-chess /usr/share/chinese-chess /usr/share/applications/chinese-chess.desktop
-sudo rm -f /usr/share/icons/hicolor/256x256/apps/chinese-chess.png
 ```
 
 ## 依赖 / Dependencies
@@ -72,25 +66,27 @@ sudo rm -f /usr/share/icons/hicolor/256x256/apps/chinese-chess.png
 | 包名 | 说明 |
 |------|------|
 | python3 (>= 3.8) | Python 3.8+ |
-| libgl1-mesa-glx | OpenGL 支持 |
+| libgl1 | OpenGL 支持 |
 | libglib2.0-0 | GLib 库 |
 | libsm6 | X11 SM 库 |
 | libxtst6 | X11 XTest 库 |
+| libx11-6 | X11 库 |
 
 | Package | Description |
 |---------|-------------|
 | python3 (>= 3.8) | Python 3.8+ |
-| libgl1-mesa-glx | OpenGL support |
+| libgl1 | OpenGL support |
 | libglib2.0-0 | GLib library |
 | libsm6 | X11 SM library |
 | libxtst6 | X11 XTest library |
+| libx11-6 | X11 library |
 
 ## 常见问题 / FAQ
 
-### Q: 安装时提示缺少依赖
-A: 运行 `sudo apt-get install -f` (DEB) 或 `sudo dnf install -y` (RPM) 自动修复
-**Q: Missing dependencies during installation**
-A: Run `sudo apt-get install -f` (DEB) or `sudo dnf install -y` (RPM) to fix automatically
+### Q: 安装时提示缺少 libgl1-mesa-glx
+A: 运行 `sudo apt-get install -y libgl1 libgl1-mesa-glx` 自动修复
+**Q: Missing libgl1-mesa-glx error**
+A: Run `sudo apt-get install -y libgl1 libgl1-mesa-glx` to fix automatically
 
 ### Q: 黑屏或无法显示
 A: 请确保已安装 OpenGL 驱动
