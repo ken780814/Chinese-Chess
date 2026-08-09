@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QComboBox, QSlider)
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QRect
 from PyQt5.QtGui import (QPainter, QColor, QFont, QPixmap, QPalette, QBrush,
-                       QRadialGradient, QLinearGradient, QPainterPath, QPen)
+                       QImage, QRadialGradient, QLinearGradient, QPainterPath, QPen)
 from engine.rules import Board, Rules
 from engine.ai import AI
 from engine.sound import SoundManager
@@ -94,7 +94,9 @@ class ChessBoardWidget(QWidget):
             if os.path.exists(path):
                 pixmap = QPixmap(path)
                 if not pixmap.isNull():
-                    self.piece_pixmap[key] = pixmap
+                    # 加圆形 alpha 遮罩：圆心内不透明、方形四角透明，
+                    # 避免棋子方形背景盖住棋盘网格线
+                    self.piece_pixmap[key] = self._apply_circular_mask(pixmap)
         
         # 加载棋盘木质纹理（可选，用于底图）
         board_tex = os.path.join(assets_path, 'board_texture.png')
@@ -106,7 +108,40 @@ class ChessBoardWidget(QWidget):
         
         # 创建棋盘背景
         self._create_board_background()
-        
+
+    def _apply_circular_mask(self, pixmap):
+        """把方形棋子图处理为：圆盘内不透明、圆盘外透明，文字保持居中。"""
+        size = max(pixmap.width(), pixmap.height())
+        # 转 QImage 处理 alpha
+        img = pixmap.toImage().convertToFormat(QImage.Format_ARGB32)
+        w, h = img.width(), img.height()
+        # 以较短边为直径，居中裁剪为正方形
+        s = min(w, h)
+        cx, cy = w // 2, h // 2
+        # 创建圆形遮罩
+        mask = QImage(s, s, QImage.Format_ARGB32)
+        mask.fill(Qt.transparent)
+        mp = QPainter(mask)
+        mp.setRenderHint(QPainter.Antialiasing)
+        mp.setBrush(QBrush(QColor(255, 255, 255)))
+        mp.setPen(Qt.NoPen)
+        # 半径留 2px 透明边，避免边缘锯齿
+        r = s // 2 - 2
+        mp.drawEllipse(s // 2 - r, s // 2 - r, r * 2, r * 2)
+        mp.end()
+        # 把源图对应区域拷到正方形画布
+        square = QImage(s, s, QImage.Format_ARGB32)
+        square.fill(Qt.transparent)
+        sp = QPainter(square)
+        sp.setRenderHint(QPainter.Antialiasing)
+        sp.setBrush(QBrush(QColor(255, 255, 255)))
+        sp.setPen(Qt.NoPen)
+        sp.drawImage(0, 0, img, cx - s // 2, cy - s // 2, s, s)
+        sp.end()
+        # 应用遮罩
+        square.setAlphaChannel(mask)
+        return QPixmap.fromImage(square)
+
     def _create_board_background(self):
         """创建带质感和立体感的棋盘背景图片"""
         cell_size = 60
