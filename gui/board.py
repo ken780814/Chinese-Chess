@@ -110,36 +110,18 @@ class ChessBoardWidget(QWidget):
         self._create_board_background()
 
     def _apply_circular_mask(self, pixmap):
-        """把方形棋子图处理为：圆盘内不透明、圆盘外透明，文字保持居中。"""
-        size = max(pixmap.width(), pixmap.height())
-        # 转 QImage 处理 alpha
+        """棋子图已预处理为圆盘内不透明、圆盘外透明（自带 alpha）。
+        这里只做居中正方形裁剪，保留原 alpha，不再叠加圆形遮罩。"""
         img = pixmap.toImage().convertToFormat(QImage.Format_ARGB32)
         w, h = img.width(), img.height()
-        # 以较短边为直径，居中裁剪为正方形
         s = min(w, h)
         cx, cy = w // 2, h // 2
-        # 创建圆形遮罩
-        mask = QImage(s, s, QImage.Format_ARGB32)
-        mask.fill(Qt.transparent)
-        mp = QPainter(mask)
-        mp.setRenderHint(QPainter.Antialiasing)
-        mp.setBrush(QBrush(QColor(255, 255, 255)))
-        mp.setPen(Qt.NoPen)
-        # 半径留 2px 透明边，避免边缘锯齿
-        r = s // 2 - 2
-        mp.drawEllipse(s // 2 - r, s // 2 - r, r * 2, r * 2)
-        mp.end()
-        # 把源图对应区域拷到正方形画布
         square = QImage(s, s, QImage.Format_ARGB32)
         square.fill(Qt.transparent)
         sp = QPainter(square)
         sp.setRenderHint(QPainter.Antialiasing)
-        sp.setBrush(QBrush(QColor(255, 255, 255)))
-        sp.setPen(Qt.NoPen)
         sp.drawImage(0, 0, img, cx - s // 2, cy - s // 2, s, s)
         sp.end()
-        # 应用遮罩
-        square.setAlphaChannel(mask)
         return QPixmap.fromImage(square)
 
     def _create_board_background(self):
