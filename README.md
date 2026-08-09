@@ -30,65 +30,52 @@
 
 ## 📥 下载 / Download
 
-| 平台 | 文件 | 下载 |
+| 平台 | 文件 | 下载 / 说明 |
 |------|------|------|
-| 🐧 Linux | `chinese-chess_2.0.0_amd64.deb` (68KB) | [下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.0) |
-| 🐧 Linux | `Chinese-Chess-v2.0-linux-x64.tar.gz` | [下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.0) |
-| 🪟 Windows | `Chinese-Chess-v2.0-windows-x64.tar.gz` | [下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.0) |
-| 🍎 macOS | `中国象棋.app` | [下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.0) |
-| 📱 Android | `chinese_chess-2.0.0-debug.apk` | [下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.0) |
-| 📱 iOS | 需要本地编译 | [源码](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.0) |
+| 🐧 Linux (DEB) | `chinese-chess_2.4.0_amd64.deb` (1.4MB) | [下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.4) |
+| 🪟 Windows | 需本地构建（见下方说明） | 源码 `scripts/package_windows.sh` |
+| 🍎 macOS | 需本地构建（见下方说明） | 源码 `scripts/package_macos.sh` |
+| 📱 Android | 需本地编译 APK | 源码 `buildozer.spec` |
+| 📱 iOS | 需 Mac 环境编译 | 源码 `main_mobile.py` |
+
+> **当前仅发布 Linux DEB 包**（V2.4.0）。Windows / macOS / Android / iOS 的打包脚本与源码已就绪，但未在 CI 中预构建，请按下方「本地构建」章节自行编译。
 
 ---
 
 ## 🚀 快速安装 / Installation
 
-### Linux (DEB 包)
+### Linux (DEB 包) — 推荐
 
 ```bash
-# 下载并安装 V2.0 (68KB 轻量包)
-wget https://github.com/ken780814/Chinese-Chess/releases/download/v2.0/chinese-chess_2.0.0_amd64.deb
-sudo apt install ./chinese-chess_2.0.0_amd64.deb
+# 下载并安装 V2.4 (1.4MB，含 AI 生成木质棋子素材)
+wget https://github.com/ken780814/Chinese-Chess/releases/download/v2.4/chinese-chess_2.4.0_amd64.deb
+sudo apt install ./chinese-chess_2.4.0_amd64.deb
 
 # 运行
 chinese-chess
 ```
 
-### Linux (tar.gz 压缩包)
+依赖（`python3-pyqt5`、`python3-pil`、`python3-pygame`、`libgl1` 等）由 apt 自动安装。
+
+### Windows / macOS（本地构建）
+
+仓库已提供打包脚本，需在对应平台上运行：
 
 ```bash
-wget https://github.com/ken780814/Chinese-Chess/releases/download/v2.0/Chinese-Chess-v2.0-linux-x64.tar.gz
-tar -xf Chinese-Chess-v2.0-linux-x64.tar.gz
-cd Chinese-Chess-v2.0-linux-x64
-./chinese-chess
-```
-
-### Windows
-
-```cmd
-REM 下载 Windows 版本
-curl -L https://github.com/ken780814/Chinese-Chess/releases/download/v2.0/Chinese-Chess-v2.0-windows-x64.tar.gz -o chinese-chess.zip
-REM 解压并运行 chinese-chess.exe
-```
-
-### macOS
-
-```bash
-brew install python@3.11
-pip3 install PyQt5 pygame pillow
-# Clone and run
+# Windows（在 Windows 上执行）
 git clone https://github.com/ken780814/Chinese-Chess.git
 cd Chinese-Chess
-python3 main.py
+bash scripts/package_windows.sh   # 产出 dist/chinese-chess.exe
+
+# macOS（在 macOS 上执行）
+bash scripts/package_macos.sh     # 产出 .app
 ```
 
-### Android
+### Android（本地编译 APK）
 
 ```bash
-# 本地编译 APK
-pip3 install kivy pygame pillow
-pip3 install buildozer cython
-buildozer android debug
+pip3 install kivy buildozer cython
+buildozer android debug   # 产出 bin/*.apk
 ```
 
 ---
@@ -180,6 +167,23 @@ python3 scripts/create_deb.py
 ---
 
 ## 🆕 版本更新 / Changelog
+
+### v2.4 (2026-08-09)
+- **🎨 立体感恢复**: 棋子采用羽化 alpha，保留圆盘立体高光环，消除 V2.3 扁片感
+- **📐 比例优化**: 棋子绘制尺寸从 1.02 格距缩到 0.9 格距，留白更舒适
+- **🐧 仅发布 Linux DEB** (1.4MB)
+
+### v2.3 (2026-08-09)
+- **✂️ 棋子透明化**: floodfill + 圆形硬遮罩，棋盘外 100% 透明
+- **🐛 修复**: 消除棋子周围白色方形/圆形背景遮挡棋盘线
+
+### v2.2 (2026-08-09)
+- **📏 棋盘线修复**: AI 纹理改为高斯模糊只留木色，代码绘制唯一一套清晰网格线
+- **✂️ 棋子遮罩**: 圆形 alpha 遮罩，圆盘外透明
+
+### v2.1 (2026-08-09)
+- **🎨 素材升级**: 用 Agnes AI 生成木质棋子（14 枚）+ 棋盘纹理，替换代码黑体棋子
+- **🀄 传统样式**: 双方本体同色木盘，红/黑书法文字区分敌我
 
 ### v2.0 (2026-08-09)
 - **⚡ 体积优化**: DEB 包从 73MB 减小到 68KB (99.9% 减少)
