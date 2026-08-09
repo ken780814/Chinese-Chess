@@ -1,103 +1,88 @@
-# 中国象棋 - Linux 版本
-# Chinese Chess - Linux Version
+# 中国象棋 - Linux 安装与启动指南
 
-## 系统要求 / System Requirements
+## 📥 下载 / Download
 
-- Ubuntu 18.04+ / Debian 10+ / Linux Mint 19+ / CentOS 8+ / Fedora 33+
-- x86_64 架构
-- 256MB 内存以上
-- OpenGL 支持
-- 100MB 磁盘空间
-
-- Ubuntu 18.04+ / Debian 10+ / Linux Mint 19+ / CentOS 8+ / Fedora 33+
-- x86_64 architecture
-- 256MB RAM or more
-- OpenGL support
-- 100MB disk space
-
-## 安装方式 / Installation
-
-### 方式一：使用 apt 安装（推荐） / Method 1: Use apt (Recommended)
 ```bash
-sudo apt install ./chinese-chess_1.0.0_amd64.deb
+wget https://github.com/ken780814/Chinese-Chess/releases/download/v2.0/chinese-chess_2.0.0_amd64.deb
 ```
 
-### 方式二：使用 dpkg 安装 / Method 2: Use dpkg
+## 📦 安装 / Installation
+
+### 方法 1：使用 apt (推荐)
+
 ```bash
-# 1. 安装依赖 / Install dependencies
-sudo apt-get install -y libgl1 libglib2.0-0 libsm6 libxtst6 libx11-6
-
-# 2. 安装 DEB 包 / Install DEB package
-sudo dpkg -i chinese-chess_1.0.0_amd64.deb
-
-# 3. 修复依赖 / Fix dependencies
-sudo apt-get install -f
+sudo apt install ./chinese-chess_2.0.0_amd64.deb
 ```
 
-### 方式三：从源码编译 / Method 3: Build from Source
+### 方法 2：创建安装脚本
+
 ```bash
-git clone https://github.com/ken780814/Chinese-Chess.git
-cd Chinese-Chess
-pip3 install -r requirements.txt
-python3 main.py
+chmod +x install_chinese_chess.sh
+./install_chinese_chess.sh
 ```
 
-## 运行方式 / How to Run
+## 🚀 启动 / Launch
 
-### 方式一：桌面启动器 / Method 1: Desktop Launcher
-在应用菜单中搜索 "中国象棋" 或 "Chinese Chess"
-Search for "Chinese Chess" in the application menu
+### 桌面启动 / Desktop
 
-### 方式二：命令行运行 / Method 2: Command Line
+- 在应用菜单搜索 "Chinese Chess" 或 "中国象棋"
+- 点击图标启动
+
+### 命令行启动 / Command Line
+
 ```bash
-chinese-chess                    # 开始游戏
-chinese-chess --mode=endgame     # 残局挑战
-chinese-chess --no-sound         # 禁用音效
+chinese-chess                    # 启动游戏
+chinese-chess --mode=endgame     # 进入残局模式
+chinese-chess --no-sound         # 关闭音效
 ```
 
-## 卸载 / Uninstallation
+## 🗑️ 卸载 / Uninstall
 
 ```bash
 sudo apt remove chinese-chess
+sudo apt autoremove
 ```
 
-## 依赖 / Dependencies
+## 🔧 安装后路径 / Installation Paths
 
-| 包名 | 说明 |
-|------|------|
-| python3 (>= 3.8) | Python 3.8+ |
-| libgl1 | OpenGL 支持 |
-| libglib2.0-0 | GLib 库 |
-| libsm6 | X11 SM 库 |
-| libxtst6 | X11 XTest 库 |
-| libx11-6 | X11 库 |
+| 文件类型 | 路径 |
+|---------|------|
+| 可执行文件 | `/usr/bin/chinese-chess` |
+| 主程序 | `/usr/share/chinese-chess/main.py` |
+| 棋子图片 | `/usr/share/chinese-chess/assets/` |
+| 游戏引擎 | `/usr/share/chinese-chess/engine/` |
+| 残局数据 | `/usr/share/chinese-chess/data/` |
+| 桌面快捷方式 | `/usr/share/applications/chinese-chess.desktop` |
+| 图标 | `/usr/share/icons/hicolor/256x256/apps/chinese-chess.png` |
 
-| Package | Description |
-|---------|-------------|
-| python3 (>= 3.8) | Python 3.8+ |
-| libgl1 | OpenGL support |
-| libglib2.0-0 | GLib library |
-| libsm6 | X11 SM library |
-| libxtst6 | X11 XTest library |
-| libx11-6 | X11 library |
+## ❓ 常见问题 / FAQ
 
-## 常见问题 / FAQ
+### Q1: 提示找不到 python3？
+```bash
+sudo apt install python3 python3-pyqt5 python3-pil python3-pygame
+```
 
-### Q: 安装时提示缺少依赖
-A: 运行 `sudo apt-get install -y libgl1 libglib2.0-0 libsm6 libxtst6 libx11-6` 自动修复
-**Q: Missing dependencies error**
-A: Run `sudo apt-get install -y libgl1 libglib2.0-0 libsm6 libxtst6 libx11-6` to fix automatically
+### Q2: 游戏启动后立即退出？
+尝试安装所有依赖：
+```bash
+sudo apt-get install -y python3 python3-pyqt5 libgl1 libglib2.0-0 libsm6 libxtst6 libx11-6 python3-pil python3-pygame
+```
 
-### Q: 黑屏或无法显示
-A: 请确保已安装 OpenGL 驱动
-**Q: Black screen or display issues**
-A: Ensure OpenGL drivers are installed
+### Q3: 声音没有反应？
+- 检查系统音量
+- 使用 `--no-sound` 参数静默模式
 
-### Q: 音效不播放
-A: 检查系统音量，或运行 `--no-sound` 禁用音效
-**Q: Sound not playing**
-A: Check system volume, or run with `--no-sound` to disable
+### Q4: 棋子图片不显示？
+可能缺少字体或图片权限，请重新安装：
+```bash
+sudo apt install --reinstall chinese-chess
+```
 
-## 许可证 / License
+## 📞 支持 / Support
 
-MIT License
+- **GitHub Issues**: https://github.com/ken780814/Chinese-Chess/issues
+- **项目仓库**: https://github.com/ken780814/Chinese-Chess
+
+---
+
+© 2026 Chinese Chess Project. MIT License.
