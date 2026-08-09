@@ -40,13 +40,11 @@ class AI:
             return self._minimax_move(board, color, depth=2)
     
     def _easy_move(self, board, color):
-        """初级 AI - 随机走法"""
-        all_moves = Rules.get_all_moves(board, color, check_check=False)
-        
+        """初级 AI - 在合法走法中随机选择（避免走出送将的废步）"""
+        all_moves = Rules.get_all_moves(board, color, check_check=True)
+
         if all_moves:
-            # 随机选择一个走法
-            move = random.choice(all_moves)
-            return move  # (from_row, from_col, to_row, to_col)
+            return random.choice(all_moves)
         return None
     
     def _minimax_move(self, board, color, depth):

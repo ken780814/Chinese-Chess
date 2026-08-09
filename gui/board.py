@@ -11,7 +11,8 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QHBoxLayout, QPushButton, QLabel, QMessageBox,
                              QComboBox, QSlider)
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QRect
-from PyQt5.QtGui import QPainter, QColor, QFont, QPixmap, QPalette, QBrush
+from PyQt5.QtGui import (QPainter, QColor, QFont, QPixmap, QPalette, QBrush,
+                       QRadialGradient, QLinearGradient, QPainterPath, QPen)
 from engine.rules import Board, Rules
 from engine.ai import AI
 from engine.sound import SoundManager
@@ -72,6 +73,11 @@ class ChessBoardWidget(QWidget):
         if not os.path.exists(assets_path):
             assets_path = os.path.join(os.path.dirname(base_path), 'assets')
         
+        # 棋子图片目录（AI 生成的木质棋子素材）
+        pieces_path = os.path.join(assets_path, 'pieces')
+        if not os.path.exists(pieces_path):
+            pieces_path = assets_path  # 回退到旧位置
+        
         # 加载棋子图片
         piece_files = {
             'K_red': 'K_red.png', 'K_black': 'K_black.png',
@@ -84,174 +90,316 @@ class ChessBoardWidget(QWidget):
         }
         
         for key, filename in piece_files.items():
-            path = os.path.join(assets_path, filename)
+            path = os.path.join(pieces_path, filename)
             if os.path.exists(path):
                 pixmap = QPixmap(path)
                 if not pixmap.isNull():
                     self.piece_pixmap[key] = pixmap
         
+        # 加载棋盘木质纹理（可选，用于底图）
+        board_tex = os.path.join(assets_path, 'board_texture.png')
+        self.board_texture = None
+        if os.path.exists(board_tex):
+            tex = QPixmap(board_tex)
+            if not tex.isNull():
+                self.board_texture = tex
+        
         # 创建棋盘背景
         self._create_board_background()
         
     def _create_board_background(self):
-        """创建棋盘背景图片"""
-        # 棋盘尺寸
+        """创建带质感和立体感的棋盘背景图片"""
         cell_size = 60
         padding = 40
         width = padding * 2 + 8 * cell_size
         height = padding * 2 + 9 * cell_size
-        
-        # 创建 pixmap
-        self.board_pixmap = QPixmap(width, height)
-        self.board_pixmap.fill(QColor(220, 179, 94))
-        
-        # 绘制
+        # 加一圈立体木框
+        frame = 18
+        total_w = width + frame * 2
+        total_h = height + frame * 2
+
+        self.board_pixmap = QPixmap(total_w, total_h)
         painter = QPainter(self.board_pixmap)
         painter.setRenderHint(QPainter.Antialiasing)
-        
-        # 绘制棋盘线
-        painter.setPen(QColor(139, 69, 19))
-        
+
+        # --- 外木框（立体渐变）---
+        frame_grad = QLinearGradient(0, 0, total_w, total_h)
+        frame_grad.setColorAt(0, QColor(120, 72, 33))
+        frame_grad.setColorAt(0.5, QColor(96, 56, 24))
+        frame_grad.setColorAt(1, QColor(70, 40, 16))
+        painter.setBrush(QBrush(frame_grad))
+        painter.setPen(Qt.NoPen)
+        painter.drawRoundedRect(0, 0, total_w, total_h, 14, 14)
+
+        # 内框高光描边
+        painter.setPen(QColor(180, 130, 70))
+        painter.setBrush(Qt.NoBrush)
+        painter.drawRoundedRect(3, 3, total_w - 6, total_h - 6, 12, 12)
+
+        # --- 棋盘木质面（使用 AI 生成的木质纹理底图，平铺覆盖）---
+        board_top = frame
+        board_left = frame
+        if self.board_texture and not self.board_texture.isNull():
+            # 将纹理缩放铺满棋盘面，保留真实木纹质感
+            scaled_tex = self.board_texture.scaled(
+                width, height, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+            painter.setBrush(QBrush(scaled_tex))
+            painter.setPen(Qt.NoPen)
+            painter.drawRoundedRect(board_left, board_top, width, height, 6, 6)
+            # 叠一层半透明木色统一色调
+            face_grad = QLinearGradient(board_left, board_top, board_left + width, board_top + height)
+            face_grad.setColorAt(0, QColor(232, 192, 120, 70))
+            face_grad.setColorAt(1, QColor(196, 150, 78, 70))
+            painter.setBrush(QBrush(face_grad))
+            painter.drawRoundedRect(board_left, board_top, width, height, 6, 6)
+        else:
+            # 回退：纯渐变木色面
+            face_grad = QLinearGradient(board_left, board_top, board_left + width, board_top + height)
+            face_grad.setColorAt(0, QColor(232, 192, 120))
+            face_grad.setColorAt(0.5, QColor(214, 168, 92))
+            face_grad.setColorAt(1, QColor(196, 150, 78))
+            painter.setBrush(QBrush(face_grad))
+            painter.setPen(Qt.NoPen)
+            painter.drawRoundedRect(board_left, board_top, width, height, 6, 6)
+
+        # 木纹：随机浅色细纹（仅在无纹理底图时点缀）
+        if not (self.board_texture and not self.board_texture.isNull()):
+            import random
+            rng = random.Random(20240809)
+            painter.setPen(QColor(205, 160, 86, 90))
+            for _ in range(60):
+                x1 = board_left + rng.uniform(0, width)
+                y1 = board_top + rng.uniform(0, height)
+                x2 = x1 + rng.uniform(-30, 30)
+                y2 = y1 + rng.uniform(20, 70)
+                painter.drawLine(int(x1), int(y1), int(x2), int(y2))
+
+        # 绘制棋盘线（深棕，加粗提高对比度）
+        line_color = QColor(70, 38, 14)
+        painter.setPen(QPen(line_color, 2.2))
         # 横线
         for i in range(10):
-            y = padding + i * cell_size
-            painter.drawLine(padding, y, padding + 8 * cell_size, y)
-        
+            y = board_top + padding + i * cell_size
+            painter.drawLine(board_left + padding, y, board_left + padding + 8 * cell_size, y)
         # 竖线
         for i in range(9):
-            x = padding + i * cell_size
+            x = board_left + padding + i * cell_size
             if i == 0 or i == 8:
-                painter.drawLine(x, padding, x, padding + 9 * cell_size)
+                painter.drawLine(x, board_top + padding, x, board_top + padding + 9 * cell_size)
             else:
-                painter.drawLine(x, padding, x, padding + 4 * cell_size)
-                painter.drawLine(x, padding + 5 * cell_size, x, padding + 9 * cell_size)
-        
+                painter.drawLine(x, board_top + padding, x, board_top + padding + 4 * cell_size)
+                painter.drawLine(x, board_top + padding + 5 * cell_size, x, board_top + padding + 9 * cell_size)
         # 九宫格斜线
-        painter.drawLine(padding + 3 * cell_size, padding + 7 * cell_size,
-                        padding + 5 * cell_size, padding + 9 * cell_size)
-        painter.drawLine(padding + 5 * cell_size, padding + 7 * cell_size,
-                        padding + 3 * cell_size, padding + 9 * cell_size)
-        painter.drawLine(padding + 3 * cell_size, padding,
-                        padding + 5 * cell_size, padding + 2 * cell_size)
-        painter.drawLine(padding + 5 * cell_size, padding,
-                        padding + 3 * cell_size, padding + 2 * cell_size)
-        
-        # 楚河汉界文字
-        painter.setFont(QFont("SimSun", 20, QFont.Bold))
-        painter.setPen(QColor(139, 69, 19))
-        painter.drawText(padding + 2 * cell_size, int(padding + 4.5 * cell_size), "楚 河")
-        painter.drawText(padding + 5 * cell_size, int(padding + 4.5 * cell_size), "汉 界")
-        
+        palace = [
+            (3, 7, 5, 9), (5, 7, 3, 9),
+            (3, 0, 5, 2), (5, 0, 3, 2),
+        ]
+        for c1, r1, c2, r2 in palace:
+            painter.drawLine(
+                board_left + padding + c1 * cell_size, board_top + padding + r1 * cell_size,
+                board_left + padding + c2 * cell_size, board_top + padding + r2 * cell_size)
+
+        # 楚河汉界文字（使用衬线/楷体风格字体，更具书法韵味）
+        serif_font = QFont("Noto Serif CJK SC", 24, QFont.Bold)
+        if serif_font.family() == "Noto Serif CJK SC":
+            painter.setFont(serif_font)
+        else:
+            painter.setFont(QFont("SimSun", 24, QFont.Bold))
+        # 加深文字颜色，提高辨识度
+        painter.setPen(QColor(60, 30, 10))
+        mid = board_top + padding + 4.5 * cell_size + 8
+        painter.drawText(int(board_left + padding + 1.6 * cell_size), int(mid), "楚  河")
+        painter.drawText(int(board_left + padding + 5.1 * cell_size), int(mid), "漢  界")
+
+        # 外圈投影（仅边缘内阴影，不覆盖棋盘面与文字）
+        painter.setPen(Qt.NoPen)
+        edge_shadow = QColor(40, 22, 8, 90)
+        painter.setBrush(edge_shadow)
+        # 用缩放后的棋子面绘制方式：先画暗色满面，再用清晰木面盖回中间
+        # 这里改用描边阴影：在棋盘面四边各画一条渐隐暗线
+        painter.setBrush(Qt.NoBrush)
+        for d in range(6):
+            a = 90 - d * 14
+            painter.setPen(QColor(40, 22, 8, max(a, 0)))
+            painter.drawRoundedRect(
+                board_left + 1 + d, board_top + 1 + d,
+                width - 2 - d * 2, height - 2 - d * 2, 6, 6)
+
         painter.end()
-        
-        # 存储尺寸
+
         self.cell_size = cell_size
         self.padding = padding
+        self.frame_size = frame
         self.board_width = width
         self.board_height = height
-        
     def resizeEvent(self, event):
         """窗口大小改变时重新计算"""
         super().resizeEvent(event)
         self.update()
         
+    def _draw_3d_piece(self, painter, piece, cx, cy, size):
+        """绘制一个带 3D 质感的棋子（径向渐变球面 + 投影 + 高光）。"""
+        r = size / 2
+        # 投影
+        painter.setBrush(QColor(40, 22, 8, 90))
+        painter.setPen(Qt.NoPen)
+        painter.drawEllipse(int(cx - r * 0.98), int(cy - r * 0.82), int(r * 2.0), int(r * 1.9))
+
+        # 外圈木托（暗环）
+        base_grad = QRadialGradient(cx, cy - r * 0.3, r * 1.15)
+        if piece['color'] == 'red':
+            base_grad.setColorAt(0, QColor(235, 90, 80))
+            base_grad.setColorAt(0.55, QColor(206, 44, 40))
+            base_grad.setColorAt(1, QColor(150, 20, 22))
+        else:
+            base_grad.setColorAt(0, QColor(90, 90, 96))
+            base_grad.setColorAt(0.55, QColor(48, 50, 56))
+            base_grad.setColorAt(1, QColor(22, 24, 28))
+        painter.setBrush(QBrush(base_grad))
+        painter.setPen(QPen(QColor(30, 30, 30), 1.4))
+        painter.drawEllipse(int(cx - r), int(cy - r), int(size), int(size))
+
+        # 内圈面（浅色凹陷感）
+        inner_r = r * 0.82
+        face_grad = QRadialGradient(cx, cy - r * 0.35, inner_r * 1.2)
+        if piece['color'] == 'red':
+            face_grad.setColorAt(0, QColor(255, 150, 140))
+            face_grad.setColorAt(0.6, QColor(228, 60, 54))
+            face_grad.setColorAt(1, QColor(180, 34, 32))
+        else:
+            face_grad.setColorAt(0, QColor(150, 152, 158))
+            face_grad.setColorAt(0.6, QColor(88, 90, 98))
+            face_grad.setColorAt(1, QColor(40, 42, 48))
+        painter.setBrush(QBrush(face_grad))
+        painter.setPen(QPen(QColor(20, 20, 20, 160), 1.0))
+        painter.drawEllipse(int(cx - inner_r), int(cy - inner_r), int(inner_r * 2), int(inner_r * 2))
+
+        # 顶部高光
+        hi = QRadialGradient(cx - r * 0.3, cy - r * 0.45, r * 0.7)
+        hi.setColorAt(0, QColor(255, 255, 255, 170))
+        hi.setColorAt(1, QColor(255, 255, 255, 0))
+        painter.setBrush(QBrush(hi))
+        painter.setPen(Qt.NoPen)
+        painter.drawEllipse(int(cx - r * 0.7), int(cy - r * 0.8), int(r * 1.1), int(r * 0.9))
+
+        # 棋子文字
+        piece_names = {
+            'K': '帅' if piece['color'] == 'red' else '将',
+            'A': '仕' if piece['color'] == 'red' else '士',
+            'B': '相' if piece['color'] == 'red' else '象',
+            'N': '马', 'R': '车', 'C': '炮',
+            'P': '兵' if piece['color'] == 'red' else '卒',
+        }
+        name = piece_names.get(piece['type'], '?')
+        font = QFont("SimHei", int(size * 0.42), QFont.Bold)
+        painter.setFont(font)
+        painter.setPen(QColor(255, 240, 200) if piece['color'] == 'red' else QColor(235, 238, 245))
+        # 文字描边阴影
+        painter.drawText(int(cx - size * 0.42), int(cy + size * 0.16), name)
+
     def paintEvent(self, event):
-        """绘制事件"""
+        """绘制事件（3D 质感渲染）"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        
-        # 获取 widget 尺寸
+
         widget_width = self.width()
         widget_height = self.height()
-        
-        # 计算缩放比例（保持纵横比）
-        scale_x = widget_width / self.board_width
-        scale_y = widget_height / self.board_height
-        scale = min(scale_x, scale_y, 2.0)  # 最大缩放 2 倍
-        
-        # 计算居中偏移
-        scaled_width = self.board_width * scale
-        scaled_height = self.board_height * scale
+
+        # 整图缩放（含立体边框）
+        total_w = self.board_width + self.frame_size * 2
+        total_h = self.board_height + self.frame_size * 2
+        scale_x = widget_width / total_w
+        scale_y = widget_height / total_h
+        scale = min(scale_x, scale_y, 2.0)
+
+        scaled_width = total_w * scale
+        scaled_height = total_h * scale
         offset_x = (widget_width - scaled_width) // 2
         offset_y = (widget_height - scaled_height) // 2
-        
-        # 绘制棋盘背景
+
+        # 棋盘背景
         if self.board_pixmap:
-            painter.drawPixmap(offset_x, offset_y, 
-                             scaled_width, scaled_height,
+            painter.drawPixmap(int(offset_x), int(offset_y),
+                             int(scaled_width), int(scaled_height),
                              self.board_pixmap)
-        
-        # 绘制棋子
+
+        # 棋格坐标 -> 屏幕坐标
+        def cell_pos(row, col):
+            x = offset_x + (self.frame_size + self.padding + col * self.cell_size) * scale
+            y = offset_y + (self.frame_size + self.padding + row * self.cell_size) * scale
+            return x, y
+
+        piece_size = self.cell_size * scale
+
+        # 棋子
         for row in range(10):
             for col in range(9):
                 piece = self.board.get_piece(row, col)
                 if piece:
-                    x = offset_x + (self.padding + col * self.cell_size) * scale
-                    y = offset_y + (self.padding + row * self.cell_size) * scale
-                    piece_size = self.cell_size * scale
-                    
-                    # 获取棋子图片
-                    piece_key = f"{piece['type']}_{piece['color']}"
-                    pixmap = self.piece_pixmap.get(piece_key)
-                    
-                    if pixmap and not pixmap.isNull():
-                        # 绘制棋子图片
-                        painter.drawPixmap(int(x - piece_size/2), int(y - piece_size/2),
-                                         int(piece_size), int(piece_size),
-                                         pixmap.scaled(int(piece_size), int(piece_size),
-                                                     Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+                    x, y = cell_pos(row, col)
+                    key = f"{piece['type']}_{piece['color']}"
+                    pix = self.piece_pixmap.get(key)
+                    if pix and not pix.isNull():
+                        # 使用 AI 生成的木质棋子素材（本体木色，红/黑文字区分敌我）
+                        draw_size = piece_size * 1.02
+                        painter.drawPixmap(int(x - draw_size/2), int(y - draw_size/2),
+                                         int(draw_size), int(draw_size), pix)
                     else:
-                        # 如果没有图片，使用圆形代替
-                        painter.setBrush(QColor(220, 20, 60) if piece['color'] == 'red' else QColor(30, 30, 30))
-                        painter.setPen(QColor(0, 0, 0))
-                        painter.drawEllipse(int(x - piece_size/2), int(y - piece_size/2),
-                                          int(piece_size), int(piece_size))
-        
-        # 绘制选中提示
+                        # 回退：3D 绘制
+                        self._draw_3d_piece(painter, piece, x, y, piece_size)
+
+        # 选中提示（发光环）
         if self.selected_piece:
             row, col = self.selected_piece
-            x = offset_x + (self.padding + col * self.cell_size) * scale
-            y = offset_y + (self.padding + row * self.cell_size) * scale
-            piece_size = self.cell_size * scale
-            
-            painter.setPen(QColor(255, 0, 0))
-            painter.setBrush(QColor(255, 0, 0, 50))
-            painter.drawEllipse(int(x - piece_size/2), int(y - piece_size/2),
-                              int(piece_size), int(piece_size))
-        
-        # 绘制合法走法提示
+            x, y = cell_pos(row, col)
+            r = piece_size / 2
+            glow = QRadialGradient(x, y, r * 1.2)
+            glow.setColorAt(0, QColor(255, 210, 60, 0))
+            glow.setColorAt(0.8, QColor(255, 210, 60, 60))
+            glow.setColorAt(1, QColor(255, 180, 30, 220))
+            painter.setBrush(QBrush(glow))
+            painter.setPen(QPen(QColor(255, 200, 40), 2.5))
+            painter.drawEllipse(int(x - r), int(y - r), int(piece_size), int(piece_size))
+
+        # 合法走法提示（绿点 + 可吃子红圈）
         for to_row, to_col in self.valid_moves:
-            x = offset_x + (self.padding + to_col * self.cell_size) * scale
-            y = offset_y + (self.padding + to_row * self.cell_size) * scale
-            dot_size = 15 * scale
-            
-            painter.setPen(QColor(0, 255, 0))
-            painter.setBrush(QColor(0, 255, 0, 100))
-            painter.drawEllipse(int(x - dot_size/2), int(y - dot_size/2),
-                              int(dot_size), int(dot_size))
-        
+            x, y = cell_pos(to_row, to_col)
+            if self.board.get_piece(to_row, to_col):
+                # 可吃子：红色环
+                painter.setPen(QPen(QColor(255, 80, 60), 2.5))
+                painter.setBrush(Qt.NoBrush)
+                painter.drawEllipse(int(x - piece_size/2), int(y - piece_size/2),
+                                   int(piece_size), int(piece_size))
+            else:
+                painter.setBrush(QColor(60, 200, 90, 200))
+                painter.setPen(Qt.NoPen)
+                dot = piece_size * 0.22
+                painter.drawEllipse(int(x - dot/2), int(y - dot/2),
+                                   int(dot), int(dot))
     def mousePressEvent(self, event):
         """鼠标点击事件"""
         if event.button() != Qt.LeftButton:
             return
         
-        # 获取点击坐标并转换为棋盘坐标
+        # 获取点击坐标并转换为棋盘坐标（与 paintEvent 保持一致，含立体边框）
         widget_width = self.width()
         widget_height = self.height()
-        
-        scale_x = widget_width / self.board_width
-        scale_y = widget_height / self.board_height
+
+        total_w = self.board_width + self.frame_size * 2
+        total_h = self.board_height + self.frame_size * 2
+        scale_x = widget_width / total_w
+        scale_y = widget_height / total_h
         scale = min(scale_x, scale_y, 2.0)
-        
-        offset_x = (widget_width - self.board_width * scale) // 2
-        offset_y = (widget_height - self.board_height * scale) // 2
-        
+
+        offset_x = (widget_width - total_w * scale) // 2
+        offset_y = (widget_height - total_h * scale) // 2
+
         click_x = event.x() - offset_x
         click_y = event.y() - offset_y
-        
-        # 转换为棋盘格子坐标
-        col = int(click_x / (self.cell_size * scale) - 0.5)
-        row = int(click_y / (self.cell_size * scale) - 0.5)
+
+        # 转换为棋盘格子坐标（去掉 frame 偏移）
+        col = int((click_x / scale - self.frame_size - self.padding) / self.cell_size - 0.5)
+        row = int((click_y / scale - self.frame_size - self.padding) / self.cell_size - 0.5)
         
         # 边界检查
         if 0 <= row < 10 and 0 <= col < 9:
@@ -458,42 +606,29 @@ class GameWidget(QWidget):
         self._ai_move()
         
     def _ai_move(self):
-        """AI 走棋"""
-        import random
-        
-        # 获取 AI 走法
+        """AI 走棋 - 使用对应难度的 AI 引擎"""
         board = self.board_widget.board
         color = self.board_widget.ai_color
-        
-        # 获取所有合法走法
-        all_moves = Rules.get_all_moves(board, color)
-        
-        if all_moves:
-            # 简单 AI：随机选择
-            move = random.choice(all_moves)
+        move = self.ai.get_best_move(board, color)
+
+        if move:
             from_row, from_col, to_row, to_col = move
-            
-            # 执行 AI 走棋
             self.board_widget.make_move(from_row, from_col, to_row, to_col)
-            
-            # 检查游戏是否结束
             if not self._check_game_over():
-                # 重新启动计时器
                 self.board_widget.start_timer('red')
-        
+
     def _check_game_over(self):
-        """检查游戏是否结束"""
+        """检查游戏是否结束（将死 / 将军 / 老将被抓）"""
         board = self.board_widget.board
-        current_color = self.board_widget.current_timer
-        
-        if Rules.is_checkmate(board, current_color):
-            winner = 'black' if current_color == 'red' else 'red'
-            self.status_label.setText(f"游戏结束！{winner}获胜！")
-            QMessageBox.information(self, "游戏结束", f"{winner}获胜！")
+        winner, _reason = Rules.is_game_over(board)
+        if winner is not None:
+            winner_cn = '红方' if winner == 'red' else '黑方'
+            self.status_label.setText(f"游戏结束！{winner_cn}获胜！")
+            QMessageBox.information(self, "游戏结束", f"{winner_cn}获胜！")
             self.board_widget.timer.stop()
             return True
         return False
-        
+
     def _on_difficulty_changed(self, difficulty):
         """难度改变"""
         difficulty_map = {

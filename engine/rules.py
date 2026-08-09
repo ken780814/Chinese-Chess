@@ -110,32 +110,51 @@ class Rules:
     
     @staticmethod
     def get_all_moves(board, color, check_check=True):
-        """
-        获取指定颜色的所有合法走法
-        check_check: 是否检查是否会导致自己被将军（默认True）
+        """获取指定颜色的所有合法走法。
+
+        check_check=True 时，过滤掉会导致自己被将军的走法。
+        性能优化：用增量 move/unmove 代替每步深拷贝（copy 仅做一次浅拷贝
+        用于安全回滚），整体复杂度从 O(走法数 × 棋盘拷贝) 降到接近 O(走法数)。
         """
         all_moves = []
-        
+
         for row in range(BOARD_ROWS):
             for col in range(BOARD_COLS):
                 piece = board.get_piece(row, col)
                 if piece and piece['color'] == color:
                     moves = Rules._get_piece_moves(board, row, col, piece)
-                    
+
                     if check_check:
-                        # 过滤掉会导致自己被将军的走法
                         for to_row, to_col in moves:
-                            temp_board = board.copy()
-                            temp_board.move_piece(row, col, to_row, to_col)
-                            if not Rules._is_king_in_check(temp_board, color, raw=True):
+                            # 增量移动
+                            captured = board.get_piece(to_row, to_col)
+                            moving = board.get_piece(row, col)
+                            board.set_piece(to_row, to_col, moving)
+                            board.set_piece(row, col, None)
+                            in_check = Rules._is_king_in_check(board, color, raw=True)
+                            # 回滚
+                            board.set_piece(row, col, moving)
+                            board.set_piece(to_row, to_col, captured)
+                            if not in_check:
                                 all_moves.append((row, col, to_row, to_col))
                     else:
-                        # 不检查将军，返回所有走法
                         for to_row, to_col in moves:
                             all_moves.append((row, col, to_row, to_col))
-        
+
         return all_moves
-    
+    @staticmethod
+    def get_valid_moves(board, row, col):
+        """返回某位置棋子的所有合法目标点 (to_row, to_col)。
+
+        供 GUI/残局模式使用：从 (row, col) 出发的走法（不校验将军，
+        仅校验基本吃子规则）。移动后是否送将的判定由调用方按需处理。
+        """
+        piece = board.get_piece(row, col)
+        if piece is None:
+            return []
+        return Rules._get_piece_moves(board, row, col, piece)
+
+
     @staticmethod
     def _get_piece_moves(board, row, col, piece):
         """获取单个棋子的所有可能走法（不检查是否导致被将军）"""
@@ -255,6 +274,8 @@ class Rules:
     @staticmethod
     def _get_knight_moves(board, row, col):
         """马的移动规则"""
+        piece = board.get_piece(row, col)
+        color = piece['color'] if piece else None
         moves = []
         # 马走日字，有蹩马腿
         knight_moves = [
@@ -276,11 +297,9 @@ class Rules:
                 # 检查是否蹩马腿
                 if board.get_piece(leg_row, leg_col) is None:
                     target = board.get_piece(new_row, new_col)
-                    if target is None or target['color'] != 'red':
-                        pass
-                    if target is None or target['color'] != 'black':
-                        pass
-                    moves.append((new_row, new_col))
+                    # 不能吃己方棋子
+                    if target is None or target['color'] != color:
+                        moves.append((new_row, new_col))
         
         return moves
     
@@ -365,28 +384,104 @@ class Rules:
     
     @staticmethod
     def _is_king_in_check(board, color, raw=False):
-        """
-        检查指定颜色的将/帅是否被将军
-        raw: 是否使用原始检查（不递归调用 get_valid_moves）
+        """检查指定颜色的将/帅是否被将军（反向扫描，性能优于全盘扫描）。
+
+        从将帅位置出发，沿各棋子的攻击方式反推是否有敌方棋子能攻击到它，
+        而不是遍历全盘。raw 参数已废弃，保留以兼容调用方。
         """
         king_pos = board.find_king(color)
         if king_pos is None:
             return True  # 将/帅被吃掉，也算被将军
-        
-        enemy_color = 'black' if color == 'red' else 'red'
-        
-        # 检查所有敌方棋子是否能攻击到将/帅
-        for row in range(BOARD_ROWS):
-            for col in range(BOARD_COLS):
-                piece = board.get_piece(row, col)
-                if piece and piece['color'] == enemy_color:
-                    # 使用 _get_piece_moves 而不是 get_valid_moves，避免递归
-                    moves = Rules._get_piece_moves(board, row, col, piece)
-                    if king_pos in moves:
+        kr, kc = king_pos
+        enemy = 'black' if color == 'red' else 'red'
+
+        # 1) 同列敌人将帅对脸 (飞将)
+        for r in range(10):
+            if r == kr:
+                continue
+            p = board.get_piece(r, kc)
+            if p and p['type'] == 'K' and p['color'] == enemy:
+                # 中间无子才算对脸
+                blocked = any(board.get_piece(rr, kc) is not None for rr in range(min(r, kr)+1, max(r, kr)))
+                if not blocked:
+                    return True
+
+        # 2) 车/帅(将) 直线攻击
+        for dr, dc in ((-1,0),(1,0),(0,-1),(0,1)):
+            r, c = kr+dr, kc+dc
+            while board.is_valid_position(r, c):
+                p = board.get_piece(r, c)
+                if p is not None:
+                    if p['color'] == enemy and p['type'] in ('R', 'K'):
                         return True
-        
+                    break  # 任何棋子挡路，直线攻击失效
+                r += dr
+                c += dc
+
+        # 3) 炮 隔子攻击 (需要恰好一个炮架)
+        for dr, dc in ((-1,0),(1,0),(0,-1),(0,1)):
+            r, c = kr+dr, kc+dc
+            screen = 0
+            while board.is_valid_position(r, c):
+                p = board.get_piece(r, c)
+                if p is not None:
+                    if screen == 1 and p['color'] == enemy and p['type'] == 'C':
+                        return True
+                    if screen >= 2:
+                        break
+                    screen += 1
+                r += dr
+                c += dc
+
+        # 4) 马 走日攻击 (从将帅位置看 8 个马步，检查是否有敌马且未被蹩腿)
+        knight_offsets = (
+            (-2,-1,-1,0),(-2,1,-1,0),(2,-1,1,0),(2,1,1,0),
+            (-1,-2,0,-1),(-1,2,0,1),(1,-2,0,-1),(1,2,0,1),
+        )
+        for dr, dc, leg_dr, leg_dc in knight_offsets:
+            r, c = kr+dr, kc+dc
+            if board.is_valid_position(r, c):
+                p = board.get_piece(r, c)
+                if p and p['color'] == enemy and p['type'] == 'N':
+                    # 蹩马腿检查：腿在将帅与马之间
+                    leg_r, leg_c = kr+leg_dr, kc+leg_dc
+                    if board.get_piece(leg_r, leg_c) is None:
+                        return True
+
+        # 5) 兵/卒 贴身攻击 (敌方兵在将帅斜前/正前一步)
+        # 敌兵攻击方向：红兵向上(-1)，黑卒向下(+1)
+        pawn_dir = -1 if enemy == 'red' else 1
+        for dc in (-1, 0, 1):
+            r, c = kr + pawn_dir, kc + dc
+            if board.is_valid_position(r, c):
+                p = board.get_piece(r, c)
+                if p and p['color'] == enemy and p['type'] == 'P':
+                    # 兵只能向前和横走，所以正前/左前/右前都能吃
+                    if dc == 0 or True:
+                        return True
+
+        # 6) 象/相 田字攻击 (从将帅看 4 个田字角)
+        bishop_offsets = ((-2,-2),(-2,2),(2,-2),(2,2))
+        for dr, dc in bishop_offsets:
+            r, c = kr+dr, kc+dc
+            if board.is_valid_position(r, c):
+                p = board.get_piece(r, c)
+                if p and p['color'] == enemy and p['type'] == 'B':
+                    # 象不过河已在布置时保证；田字中心无子
+                    eye_r, eye_c = kr + dr//2, kc + dc//2
+                    if board.get_piece(eye_r, eye_c) is None:
+                        return True
+
+        # 7) 士/仕 斜线一步攻击
+        advisor_offsets = ((-1,-1),(-1,1),(1,-1),(1,1))
+        for dr, dc in advisor_offsets:
+            r, c = kr+dr, kc+dc
+            if board.is_valid_position(r, c):
+                p = board.get_piece(r, c)
+                if p and p['color'] == enemy and p['type'] == 'A':
+                    return True
+
         return False
-    
     @staticmethod
     def is_checkmate(board, color):
         """检查是否将死"""

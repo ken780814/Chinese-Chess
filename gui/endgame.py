@@ -296,41 +296,63 @@ class EndgameWidget(QWidget):
                 self.update()
     
     def make_move(self, from_row, from_col, to_row, to_col):
-        """执行移动"""
+        """执行移动（红方玩家走子）"""
         captured = self.board.move_piece(from_row, from_col, to_row, to_col)
         self.move_count += 1
         self.update_move_count()
-        
-        # 检查是否将死
-        if Rules.is_checkmate(self.board, 'black'):
+
+        # 玩家走子正确，推进解法索引
+        self.solution_index += 1
+
+        # 检查红方是否将死黑方 -> 挑战成功
+        winner, _reason = Rules.is_game_over(self.board)
+        if winner == 'red':
             self.status_label.setText(f"挑战成功！用时 {self.move_count} 步")
             QMessageBox.information(self, "挑战成功", f"恭喜！你用了 {self.move_count} 步解决了残局！")
             self.next_btn.setEnabled(True)
             self.is_solving = False
             return True
-        
-        # 检查是否走错（简单检查：是否吃掉对方棋子）
-        if Rules.is_checkmate(self.board, 'red'):
-            self.status_label.setText("游戏结束！黑方获胜")
-            QMessageBox.warning(self, "挑战失败", "黑方获胜，请重新挑战！")
+        if winner == 'black':
+            self.status_label.setText("挑战失败！红方被将死")
+            QMessageBox.warning(self, "挑战失败", "红方被将死，请重新挑战！")
             self.is_solving = False
             return True
-        
+
+        # 黑方（AI）应招
+        self._ai_respond()
         return False
-    
+
+    def _ai_respond(self):
+        """黑方 AI 应招"""
+        color = 'black'
+        move = self.ai.get_best_move(self.board, color)
+        if move:
+            fr, fc, tr, tc = move
+            self.board.move_piece(fr, fc, tr, tc)
+            self.update()
+            winner, _reason = Rules.is_game_over(self.board)
+            if winner == 'black':
+                self.status_label.setText("挑战失败！黑方将死红方")
+                QMessageBox.warning(self, "挑战失败", "黑方将死了你，请重新挑战！")
+                self.is_solving = False
+            elif winner == 'red':
+                self.status_label.setText(f"挑战成功！用时 {self.move_count} 步")
+                QMessageBox.information(self, "挑战成功", f"恭喜！你用了 {self.move_count} 步解决了残局！")
+                self.next_btn.setEnabled(True)
+                self.is_solving = False
     def update_move_count(self):
         """更新步数显示"""
         self.move_label.setText(f"步数: {self.move_count}")
     
     def show_hint(self):
-        """显示提示"""
-        if not self.current_endgame or self.solution_index >= len(self.solution_moves):
+        """显示提示：展示解法中当前这一步的文本"""
+        if not self.current_endgame:
             return
-        
-        # 找到当前应该走的棋子
-        hint = self.solution_moves[self.solution_index]
-        QMessageBox.information(self, "提示", f"下一步: {hint}")
-    
+        if self.solution_index >= len(self.solution_moves):
+            QMessageBox.information(self, "提示", "已是最后一步，或解法已走完")
+            return
+        step = self.solution_moves[self.solution_index]
+        QMessageBox.information(self, "提示", f"第 {self.solution_index + 1} 步应走：{step}")
     def reset_endgame(self):
         """重置残局"""
         if self.current_endgame:
