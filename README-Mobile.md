@@ -23,119 +23,75 @@
 - 1GB RAM or more
 - 100MB storage
 
+## 下载 / Download
+
+**V2.0 版本**: [下载源码](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.0)
+
+> ⚠️ 移动端需要在本地编译 APK/IPA
+
 ## 功能特性 / Features
 
 - ✅ 完整中国象棋规则
 - ✅ 四级 AI 难度
 - ✅ 12 个经典残局
-- ✅ 计时系统 (60秒/方)
-- ✅ 触屏操作优化
+- ✅ 计时系统
+- ✅ 触屏操作
 - ✅ 屏幕自适应
 
-- ✅ Complete Chinese chess rules
-- ✅ 4-level AI difficulty
-- ✅ 12 classic endgames
-- ✅ Timer system (60s per side)
-- ✅ Touch control optimized
-- ✅ Screen adaptation
+## 编译方式 / Build
 
-## 屏幕自适应 / Screen Adaptation
+### Android APK
 
-- 自动适配不同屏幕尺寸
-- 竖屏设计，适合手机操作
-- 触控友好，点击即走棋
-- 高清显示支持
-
-- Auto-adapt to different screen sizes
-- Portrait design, suitable for mobile
-- Touch-friendly, tap to move
-- HD display support
-
-## 运行方式 / How to Run
-
-### 方式一：直接运行 / Method 1: Direct Run
 ```bash
-pip3 install -r requirements-mobile.txt
-python3 main_mobile.py
-```
-
-### 方式二：打包为 APK / Method 2: Build APK (Android)
-```bash
-# 安装 Buildozer
+# 安装依赖
+pip3 install kivy pygame pillow
 pip3 install buildozer cython
 
 # 打包
-bash scripts/package_mobile.sh android
+buildozer android debug
+
+# 输出: bin/chinese_chess-2.0.0-debug.apk
 ```
 
-### 方式三：打包为 IPA / Method 3: Build IPA (iOS)
+### iOS IPA
+
 ```bash
-# 需要 macOS 和 Xcode
+# 需要 macOS + Xcode
+pip3 install kivy pygame pillow
+pip3 install buildozer cython
+
+buildozer ios debug
+```
+
+## 运行方式 / Run
+
+```bash
+# 直接运行 (需要 Kivy)
+python3 main_mobile.py
+
+# 或使用打包脚本
+bash scripts/package_mobile.sh android
 bash scripts/package_mobile.sh ios
 ```
 
-## 触摸控制 / Touch Controls
-
-| 操作 | 说明 |
-|------|------|
-| 点击棋子 | 选中棋子 |
-| 点击目标格 | 移动棋子 |
-| 点击按钮 | 切换难度/重新开始 |
-
-| Action | Description |
-|------|------|
-| Tap piece | Select piece |
-| Tap target | Move piece |
-| Tap button | Switch difficulty / restart |
-
 ## 技术栈 / Tech Stack
 
-- **GUI 框架**: Kivy
-- **音频**: pygame
-- **打包工具**: Buildozer
-- **开发语言**: Python 3.8+
+- **框架**: Kivy 2.2.0
+- **引擎**: pygame
+- **打包**: Buildozer
+- **屏幕自适应**: 自动计算布局
 
-- **GUI Framework**: Kivy
-- **Audio**: pygame
-- **Packaging**: Buildozer
-- **Language**: Python 3.8+
+## 项目结构 / Project Structure
 
-## 常见问题 / FAQ
-
-### Q: 为什么没有预编译的 APK/IPA？
-A: 由于移动端打包需要特定的开发环境（Android SDK / Xcode），目前仅提供源码和打包脚本，用户可自行编译。
-
-**Q: Why no pre-compiled APK/IPA?**
-A: Mobile packaging requires specific development environments (Android SDK / Xcode), so only source code and build scripts are provided for users to compile.
-
-### Q: 如何编译 APK？
-A: 
-```bash
-pip3 install buildozer cython
-buildozer android debug
+```
+Chinese-Chess/
+├── main_mobile.py           # 移动端主程序 (Kivy)
+├── buildozer.spec           # Android 构建配置
+├── requirements-mobile.txt  # 移动端依赖
+└── scripts/
+    └── package_mobile.sh    # 打包脚本
 ```
 
-**Q: How to compile APK?**
-A: 
-```bash
-pip3 install buildozer cython
-buildozer android debug
-```
+---
 
-### Q: 如何编译 IPA？
-A: 需要 macOS 系统：
-```bash
-pip3 install buildozer cython
-buildozer ios debug
-```
-
-**Q: How to compile IPA?**
-A: Requires macOS system:
-```bash
-pip3 install buildozer cython
-buildozer ios debug
-```
-
-## 许可证 / License
-
-MIT License
+© 2026 Chinese Chess Project. MIT License.

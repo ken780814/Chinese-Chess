@@ -1,7 +1,7 @@
 #!/bin/bash
-# 中国象棋 - Windows 打包脚本
+# 中国象棋 - Windows 打包脚本 (V2.0)
 
-echo "=== 中国象棋 Windows 打包程序 ==="
+echo "=== 中国象棋 Windows 打包程序 (V2.0) ==="
 
 # 检查 Python
 if ! command -v python3 &> /dev/null; then
@@ -24,12 +24,18 @@ pyinstaller --onefile --windowed --name "chinese-chess" \
     --add-data "data:data" \
     --add-data "gui:gui" \
     --add-data "engine:engine" \
+    --hidden-import=engine.rules \
+    --hidden-import=engine.ai \
+    --hidden-import=engine.sound \
+    --hidden-import=gui.board \
+    --hidden-import=gui.endgame \
+    --hidden-import=data.endgames \
     --icon=assets/icon.png \
     --noconfirm \
     main.py 2>&1
 
 # 创建发布目录
-RELEASE_DIR="release/Chinese-Chess-v1.0-windows-x64"
+RELEASE_DIR="release/Chinese-Chess-v2.0-windows-x64"
 mkdir -p "$RELEASE_DIR"
 
 # 复制文件
@@ -50,7 +56,7 @@ cp scripts/chinese-chess.bat "$RELEASE_DIR/"
 
 # 创建 README
 cat > "$RELEASE_DIR/README.txt" << 'EOF'
-中国象棋 - Chinese Chess v1.0 (Windows)
+中国象棋 - Chinese Chess v2.0 (Windows)
 ========================================
 
 运行方式：
@@ -72,7 +78,8 @@ cat > "$RELEASE_DIR/README.txt" << 'EOF'
   - 12 个经典残局
   - 计时系统
   - 音效支持
-  - 美观的棋盘界面
+  - 图片棋子，代码棋盘
+  - 窗口缩放自适应
 
 许可证：MIT
 EOF

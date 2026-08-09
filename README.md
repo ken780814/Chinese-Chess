@@ -24,6 +24,20 @@
 - 🔊 **音效支持** — 走棋、吃子、将军、胜利、失败、超时提示
 - 🖥️ **跨平台** — Linux / Windows / macOS 原生支持
 - 📱 **移动端** — Android / iOS (Kivy)
+- 📏 **自适应** — 窗口缩放时棋盘自动等比缩放
+
+---
+
+## 📥 下载 / Download
+
+| 平台 | 文件 | 下载 |
+|------|------|------|
+| 🐧 Linux | `chinese-chess_2.0.0_amd64.deb` (68KB) | [下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.0) |
+| 🐧 Linux | `Chinese-Chess-v2.0-linux-x64.tar.gz` | [下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.0) |
+| 🪟 Windows | `Chinese-Chess-v2.0-windows-x64.tar.gz` | [下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.0) |
+| 🍎 macOS | `中国象棋.app` | [下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.0) |
+| 📱 Android | `chinese_chess-2.0.0-debug.apk` | [下载](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.0) |
+| 📱 iOS | 需要本地编译 | [源码](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.0) |
 
 ---
 
@@ -68,6 +82,15 @@ cd Chinese-Chess
 python3 main.py
 ```
 
+### Android
+
+```bash
+# 本地编译 APK
+pip3 install kivy pygame pillow
+pip3 install buildozer cython
+buildozer android debug
+```
+
 ---
 
 ## 🎮 游戏操作 / Gameplay
@@ -93,7 +116,7 @@ python3 main.py
 
 ```
 Chinese-Chess/
-├── main.py                    # 主程序入口
+├── main.py                    # 主程序入口 (桌面)
 ├── main_mobile.py             # 移动端入口 (Kivy)
 ├── engine/
 │   ├── rules.py               # 棋规引擎 (449 行)
@@ -111,10 +134,9 @@ Chinese-Chess/
 │   ├── *_black.png            # 黑方棋子 (7 个)
 │   └── sounds/                # 音效文件
 ├── scripts/
+│   ├── create_deb.py          # DEB 打包
 │   ├── package.sh             # PyInstaller 打包
-│   ├── package_deb.sh         # DEB 打包
-│   ├── create_deb.py          # DEB 创建脚本
-│   └── install.sh             # 一键安装
+│   └── package_mobile.sh      # 移动端打包
 ├── buildozer.spec             # Android 构建配置
 ├── README.md                  # 项目文档
 ├── README-Linux.md           # Linux 安装指南
@@ -136,7 +158,7 @@ Chinese-Chess/
 pip3 install PyQt5 pygame pillow
 
 # 移动端
-pip3 install kivy pygame
+pip3 install kivy pygame pillow
 ```
 
 ### 运行游戏
@@ -159,13 +181,14 @@ python3 scripts/create_deb.py
 
 ## 🆕 版本更新 / Changelog
 
-### v2.0 (2026-08-08)
+### v2.0 (2026-08-09)
 - **⚡ 体积优化**: DEB 包从 73MB 减小到 68KB (99.9% 减少)
 - **📦 依赖重构**: 使用系统 Python Qt 库，不再打包 Qt
 - **🎨 界面优化**: 棋子使用图片绘制，棋盘代码绘制
 - **🖱️ 交互修复**: 修复点击事件处理
 - **📏 自适应**: 棋盘自动等比缩放
 - **🐛 Bug 修复**: 修复导入路径、初始化问题
+- **📱 多平台更新**: Windows / macOS / Android / iOS 同步修复
 
 ### v1.0 (2026-08-07)
 - 初始版本发布

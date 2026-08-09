@@ -10,66 +10,56 @@
 - 256MB RAM or more
 - 100MB disk space
 
-## 运行方式 / How to Run
+## 下载 / Download
 
-### 方式一：双击运行 / Method 1: Double-click to Run
-直接双击 `中国象棋.app`
-Double-click `中国象棋.app`
+**V2.0 版本**: [下载 macOS 版本](https://github.com/ken780814/Chinese-Chess/releases/tag/v2.0)
 
-### 方式二：命令行运行 / Method 2: Command Line
+## 安装方式 / Installation
+
+### 方式一：直接运行 / Method 1: Run Directly
+
 ```bash
-open 中国象棋.app
-open -a 中国象棋 --args --mode=endgame
+brew install python@3.11
+pip3 install PyQt5 pygame pillow
+# 或使用 requirements.txt
+pip3 install -r requirements.txt
+
+# 克隆并运行
+git clone https://github.com/ken780814/Chinese-Chess.git
+cd Chinese-Chess
+python3 main.py
 ```
 
-### 方式三：命令行运行 / Method 3: Run from Terminal
+### 方式二：使用打包脚本 / Method 2: Use Package Script
+
 ```bash
-./中国象棋.app/Contents/MacOS/chinese-chess
-./中国象棋.app/Contents/MacOS/chinese-chess --mode=endgame
-./中国象棋.app/Contents/MacOS/chinese-chess --no-sound
+bash scripts/package_macos.sh
+# 生成的 .app 在 dist/ 目录
+open "dist/中国象棋.app"
 ```
 
-## 参数说明 / Parameters
+## 运行参数 / Parameters
 
-| 参数 | 说明 |
-|------|------|
-| `--mode=endgame` | 残局挑战模式 |
-| `--no-sound` | 禁用音效 |
+```bash
+python3 main.py --mode=endgame  # 残局模式
+python3 main.py --no-sound      # 静音模式
+```
 
-| Parameter | Description |
-|------|------|
-| `--mode=endgame` | Endgame challenge mode |
-| `--no-sound` | Disable sound |
+## 功能特性 / Features
 
-## 常见问题 / FAQ
+- ✅ 四级 AI 难度
+- ✅ 12 个经典残局
+- ✅ 计时系统
+- ✅ 音效支持
+- ✅ 图片棋子
+- ✅ 窗口缩放自适应
 
-### Q: 提示"无法打开，因为无法验证开发者"
-A: 右键点击 app → 打开 → 点击"打开"即可
-**Q: "App cannot be opened because the developer cannot be verified"**
-A: Right-click the app → Open → Click "Open"
+## 卸载 / Uninstall
 
-### Q: 黑屏或无法显示
-A: 请确保 macOS 已更新到最新版本，显卡驱动正常
-**Q: Black screen or display issues**
-A: Ensure macOS is updated to the latest version and graphics driver is working
+```bash
+rm -rf Chinese-Chess
+```
 
-### Q: 音效不播放
-A: 检查系统音量设置，或运行 `--no-sound` 禁用音效
-**Q: Sound not playing**
-A: Check system volume settings, or run with `--no-sound` to disable sound
+---
 
-## 文件说明 / File Description
-
-| 文件 | 说明 |
-|------|------|
-| `中国象棋.app` | 应用程序包 |
-| `README.md` | 说明文档 |
-
-| File | Description |
-|------|------|
-| `中国象棋.app` | Application package |
-| `README.md` | Documentation |
-
-## 许可证 / License
-
-MIT License
+© 2026 Chinese Chess Project. MIT License.

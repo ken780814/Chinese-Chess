@@ -1,7 +1,7 @@
 #!/bin/bash
-# 中国象棋 - macOS 打包脚本
+# 中国象棋 - macOS 打包脚本 (V2.0)
 
-echo "=== 中国象棋 macOS 打包程序 ==="
+echo "=== 中国象棋 macOS 打包程序 (V2.0) ==="
 
 # 检查 Python
 if ! command -v python3 &> /dev/null; then
@@ -24,6 +24,12 @@ pyinstaller --onefile --windowed --name "chinese-chess" \
     --add-data "data:data" \
     --add-data "gui:gui" \
     --add-data "engine:engine" \
+    --hidden-import=engine.rules \
+    --hidden-import=engine.ai \
+    --hidden-import=engine.sound \
+    --hidden-import=gui.board \
+    --hidden-import=gui.endgame \
+    --hidden-import=data.endgames \
     --icon=assets/icon.icns \
     --noconfirm \
     main.py 2>&1
@@ -64,9 +70,9 @@ cat > "$APP_DIR/Contents/Info.plist" << 'EOF'
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0</string>
+    <string>2.0</string>
     <key>CFBundleVersion</key>
-    <string>1.0</string>
+    <string>2.0</string>
     <key>LSMinimumSystemVersion</key>
     <string>10.13</string>
     <key>NSHighResolutionCapable</key>
@@ -88,7 +94,7 @@ EOF
 
 # 创建 README
 cat > "$APP_DIR/Contents/Resources/README.txt" << 'EOF'
-中国象棋 - Chinese Chess v1.0 (macOS)
+中国象棋 - Chinese Chess v2.0 (macOS)
 =====================================
 
 运行方式：
@@ -110,7 +116,8 @@ cat > "$APP_DIR/Contents/Resources/README.txt" << 'EOF'
   - 12 个经典残局
   - 计时系统
   - 音效支持
-  - 美观的棋盘界面
+  - 图片棋子，代码棋盘
+  - 窗口缩放自适应
 
 许可证：MIT
 EOF
