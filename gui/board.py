@@ -358,7 +358,7 @@ class ChessBoardWidget(QWidget):
                     pix = self.piece_pixmap.get(key)
                     if pix and not pix.isNull():
                         # 使用 AI 生成的木质棋子素材（本体木色，红/黑文字区分敌我）
-                        draw_size = piece_size * 1.02
+                        draw_size = piece_size * 0.9
                         painter.drawPixmap(int(x - draw_size/2), int(y - draw_size/2),
                                          int(draw_size), int(draw_size), pix)
                     else:
