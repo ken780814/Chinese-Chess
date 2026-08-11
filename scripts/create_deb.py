@@ -10,7 +10,7 @@ import subprocess
 import shutil
 
 APP_NAME = "chinese-chess"
-VERSION = "2.3.0"
+VERSION = "2.4.1"
 
 def run_command(cmd, check=True):
     """运行命令"""

@@ -12,7 +12,12 @@ import argparse
 if getattr(sys, 'frozen', False):
     base_path = sys._MEIPASS
 else:
-    base_path = os.path.dirname(os.path.abspath(__file__))
+    # DEB 安装模式：源码位于 /usr/share/chinese-chess
+    _INSTALL_PATH = '/usr/share/chinese-chess'
+    if os.path.isdir(os.path.join(_INSTALL_PATH, 'gui')):
+        base_path = _INSTALL_PATH
+    else:
+        base_path = os.path.dirname(os.path.abspath(__file__))
 
 # 设置资源路径
 ASSETS_PATH = os.path.join(base_path, 'assets')
